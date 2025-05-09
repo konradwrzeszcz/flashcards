@@ -59,6 +59,19 @@ A simple web application to display flashcards. Users can select a topic, view a
   - [ done ] Task 12.1: Move the HTML for the side-selector switch into the `flashcard-header`.
   - [ done ] Task 12.2: Remove the "Start with:" label associated with the switch.
   - [ done ] Task 12.3: Adjust CSS for `flashcard-header` and the switch to ensure proper top-right alignment.
+- [ done ] Task 13: Implement Spaced Repetition System (SRS) with 5 Boxes
+  - [ done ] Task 13.1: (JS) Define data structure for `currentTopicSRSData` (card object with question, answer, box number).
+  - [ done ] Task 13.2: (JS) Modify `loadCardsForTopic` to initialize all cards in a topic to Box 1 within `currentTopicSRSData`.
+  - [ done ] Task 13.3: (HTML) Add UI elements for the 5 SRS boxes (e.g., divs to show "Box 1: [count]").
+  - [ done ] Task 13.4: (HTML) Add "I know it!" and "I forgot :c" buttons to the flashcard view.
+  - [ done ] Task 13.5: (CSS) Style the SRS boxes and new buttons.
+  - [ done ] Task 13.6: (JS) Implement `updateBoxDisplay()` to show card counts in each box UI element.
+  - [ done ] Task 13.7: (JS) Implement `handleKnowIt()`: increment card's box (max 5), update display, show new card.
+  - [ done ] Task 13.8: (JS) Implement `handleForgot()`: decrement card's box (min 1), update display, show new card.
+  - [ done ] Task 13.9: (JS) Refactor `showNewRandomCard()` to select cards from the lowest non-empty box, preventing immediate repetition within that box.
+  - [ done ] Task 13.10: (JS) Update `displayCard` to use `currentTopicSRSData`.
+  - [ done ] Task 13.11: (JS) Update `updateButtonStates` for new SRS buttons and existing buttons based on SRS state.
+  - [ done ] Task 13.12: (JS) Remove old "Next" button (`nextRandomCardBtn`) from JS logic.
 
 ## Implementation plan
 
@@ -120,6 +133,19 @@ List of tasks in implementation order and detailed description.
     a. Task 12.1: In `index.html`, locate the `div` with `id="side-selector-switch"` and its parent `div` within the `.controls` section of `#flashcard-view`. Move the `side-selector-switch` div directly into the `flashcard-header` div, placing it after the `current-topic-display` or the spacer div.
     b. Task 12.2: Remove the `<label for="side-selector-switch">Start with:</label>` element and its parent `div` if it no longer serves a purpose.
     c. Task 12.3: The `flashcard-header` already uses flexbox with `justify-content: space-between`. This should naturally push the switch to the right if it's the last item, or after the centrally displayed topic name. Minor margin/padding adjustments for the switch might be needed for visual appeal.
+13. Task 13: Implement Spaced Repetition System (SRS) with 5 Boxes
+    a. Task 13.1: In JavaScript, when a topic is loaded, instead of just `cardKeys`, create an array `currentTopicSRSData`. Each element will be an object like `{ question: "...", answer: "...", box: 1, id: "unique_id_for_card" }`. The `id` can be the question string if unique, or a generated ID.
+    b. Task 13.2: Modify `loadCardsForTopic` to iterate through `flashcardData[currentTopic]`, and for each card, populate `currentTopicSRSData` with its `question`, `answer`, and an initial `box: 1`.
+    c. Task 13.3: In `flashcard-view` HTML, add a new div (e.g., `<div id="srs-boxes-container">`) above the `flashcard-area`. This container will hold 5 child divs (e.g., class `.srs-box`, with IDs like `srs-box-1`). Each will display text like "Box 1 (0)".
+    d. Task 13.4: In `flashcard-view` HTML, within `.navigation-buttons`, remove the old "Next" button and add two new buttons: `<button id="forgot-btn">I forgot :c</button>` and `<button id="know-it-btn">I know it!</button>`.
+    e. Task 13.5: Add CSS to style `#srs-boxes-container` (e.g., flex display, space around) and `.srs-box` (padding, border, margin, min-width). Style the new `#know-it-btn` and `#forgot-btn`.
+    f. Task 13.6: Create `updateBoxDisplay()`. This function will iterate 1 through 5, count cards in `currentTopicSRSData` for each box, and update the text content of the corresponding `#srs-box-N` UI element.
+    g. Task 13.7: Create `handleKnowIt()`. If `currentCardIndex` is valid and `currentTopicSRSData[currentCardIndex]` exists: get the card, increment its `box` property (if `box < 5`, else it stays 5). Call `updateBoxDisplay()` (via `displayCard`), then `showNewRandomCard()`.
+    h. Task 13.8: Create `handleForgot()`. If `currentCardIndex` is valid and `currentTopicSRSData[currentCardIndex]` exists: get the card, decrement its `box` property (if `box > 1`, else it stays 1). Call `updateBoxDisplay()` (via `displayCard`), then `showNewRandomCard()`.
+    i. Task 13.9: Refactor `showNewRandomCard()`. Loop from box `b = 1` to `5`. Filter `currentTopicSRSData` for cards where `card.box === b`. If this filtered list (`eligibleCards`) is not empty, pick a random card from it. Ensure it's not the `previousCardId` (if `eligibleCards.length > 1`). Update `currentCardIndex` to the index of the chosen card in the *original* `currentTopicSRSData`. If all boxes are empty, display a completion message.
+    j. Task 13.10: Modify `displayCard()` to get `question` and `answer` from `currentTopicSRSData[currentCardIndex]`. `cardKeys` will no longer be used directly for display.
+    k. Task 13.11: Adjust `updateButtonStates()`: "Know it" and "Forgot" buttons are enabled if a card is displayed. "Flip" button also depends on card display.
+    l. Task 13.12: (JS) Remove all references to `nextRandomCardBtn` from JS, including its `getElementById` and event listener (if any was re-added).
 
 ## All relevant files
 
@@ -165,4 +191,7 @@ Task 11.1 - 11.8:
 +/- index.html to update (Major HTML, CSS, and JavaScript refactor)
 
 Task 12.1, 12.2, 12.3:
-+/- index.html to update (HTML and CSS changes) 
++/- index.html to update (HTML and CSS changes)
+
+Task 13.1 - 13.12:
++/- index.html to update (Major HTML, CSS, and JavaScript refactor) 

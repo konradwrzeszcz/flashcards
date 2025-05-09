@@ -96,7 +96,24 @@
             color: white;
         }
 
-        .flashcard-area { margin-top: 20px; }
+        #srs-boxes-container {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .srs-box {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.9em;
+            background-color: #f9f9f9;
+            min-width: 60px; /* Ensure boxes have some width */
+            text-align: center;
+        }
+
+        .flashcard-area { margin-top: 10px; /* Reduced margin as boxes are above */}
         .card {
             width: 100%;
             min-height: 150px;
@@ -139,7 +156,7 @@
         .card.flipped .card-back {
             transform: rotateY(360deg); 
         }
-        .navigation-buttons { margin-top: 15px; display: flex; justify-content: space-around; } 
+        .navigation-buttons { margin-top: 15px; display: flex; justify-content: space-around; gap: 10px; /* Add gap */ }
     </style>
 </head>
 <body>
@@ -158,6 +175,15 @@
                     <span id="select-right-side" class="switch-option">Right</span>
                 </div>
             </div>
+            
+            <div id="srs-boxes-container">
+                <div id="srs-box-1" class="srs-box">Box 1 (0)</div>
+                <div id="srs-box-2" class="srs-box">Box 2 (0)</div>
+                <div id="srs-box-3" class="srs-box">Box 3 (0)</div>
+                <div id="srs-box-4" class="srs-box">Box 4 (0)</div>
+                <div id="srs-box-5" class="srs-box">Box 5 (0)</div>
+            </div>
+
             <div class="flashcard-area">
                 <div id="card" class="card">
                     <div id="card-front" class="card-face card-front">Select a topic to start</div>
@@ -165,8 +191,10 @@
                 </div>
             </div>
             <div class="navigation-buttons">
+                <button id="forgot-btn" disabled>I forgot :c</button>
                 <button id="flip-card-btn" disabled>Flip Card</button>
-                <button id="next-random-card-btn" disabled>Next</button>
+                <button id="know-it-btn" disabled>I know it!</button>
+                <!-- Old Next button is removed -->
             </div>
         </div>
     </div>
@@ -182,57 +210,69 @@
         const cardFrontElement = document.getElementById('card-front');
         const cardBackElement = document.getElementById('card-back');
         const flipCardBtn = document.getElementById('flip-card-btn');
-        const nextRandomCardBtn = document.getElementById('next-random-card-btn');
+        // const nextRandomCardBtn = document.getElementById('next-random-card-btn'); // Removed
         
         const selectLeftSideBtn = document.getElementById('select-left-side');
         const selectRightSideBtn = document.getElementById('select-right-side');
 
+        const knowItBtn = document.getElementById('know-it-btn'); 
+        const forgotBtn = document.getElementById('forgot-btn');
+
         let currentTopic = '';
-        let currentCardIndex = -1; // -1 indicates no card is currently selected/displayed
-        let cardsInTopic = {};
-        let cardKeys = [];
-        let startSide = 'left'; // Default: show left side (front) of the card first
+        let currentCardIndex = -1; 
+        let currentTopicSRSData = []; 
+        let startSide = 'left'; 
+        let previousCardId = null; 
 
         function showTopicSelectionView() {
-            flashcardView.style.display = 'none';
-            topicSelectionView.style.display = 'block';
-            currentTopicDisplay.textContent = ''; 
-            cardFrontElement.textContent = 'Select a topic to start'; 
-            cardBackElement.textContent = '';
+            if (flashcardView) flashcardView.style.display = 'none';
+            if (topicSelectionView) topicSelectionView.style.display = 'block';
+            if (currentTopicDisplay) currentTopicDisplay.textContent = ''; 
+            if (cardFrontElement) cardFrontElement.textContent = 'Select a topic to start'; 
+            if (cardBackElement) cardBackElement.textContent = '';
             currentCardIndex = -1;
-            cardElement.classList.remove('flipped'); // Reset flip state of card display area
+            currentTopicSRSData = []; 
+            previousCardId = null;
+            if (cardElement) cardElement.classList.remove('flipped'); 
+            updateBoxDisplay(); // Clear box display when going to topics
             updateButtonStates(); 
         }
 
         function showFlashcardView() {
-            topicSelectionView.style.display = 'none';
-            flashcardView.style.display = 'block';
+            if (topicSelectionView) topicSelectionView.style.display = 'none';
+            if (flashcardView) flashcardView.style.display = 'block';
         }
 
         function populateTopicRectangles() {
+            if (!topicCardsContainer) {
+                console.error("CRITICAL: topicCardsContainer element not found.");
+                return;
+            }
             topicCardsContainer.innerHTML = ''; 
             if (typeof flashcardData === 'undefined' || flashcardData === null) {
-                console.error("flashcardData is not loaded or is null.");
-                const errorMsg = document.createElement('p');
-                errorMsg.textContent = "Error: Flashcard data not found.";
-                topicCardsContainer.appendChild(errorMsg);
+                console.error("populateTopicRectangles: flashcardData is undefined or null.");
+                const errorMsgEl = document.createElement('p');
+                errorMsgEl.textContent = "Error: Flashcard data not loaded. Check dictionary.js.";
+                errorMsgEl.style.color = "red";
+                errorMsgEl.style.fontWeight = "bold";
+                topicCardsContainer.appendChild(errorMsgEl);
                 return;
             }
             const topics = Object.keys(flashcardData);
             if (topics.length === 0) {
-                const noTopicsMsg = document.createElement('p');
-                noTopicsMsg.textContent = "No topics found in data.";
-                topicCardsContainer.appendChild(noTopicsMsg);
+                console.warn("populateTopicRectangles: No topics found in flashcardData.");
+                const noTopicsMsgEl = document.createElement('p');
+                noTopicsMsgEl.textContent = "No topics available. Please check your data.";
+                topicCardsContainer.appendChild(noTopicsMsgEl);
                 return;
             }
-
             topics.forEach(topicName => {
                 const topicCard = document.createElement('div');
                 topicCard.classList.add('topic-card');
                 topicCard.textContent = topicName;
                 topicCard.addEventListener('click', () => {
                     currentTopic = topicName;
-                    currentTopicDisplay.textContent = topicName;
+                    if (currentTopicDisplay) currentTopicDisplay.textContent = topicName;
                     loadCardsForTopic();
                     showFlashcardView();
                 });
@@ -241,21 +281,28 @@
         }
 
         function loadCardsForTopic() {
-            if (!flashcardData[currentTopic] || typeof flashcardData[currentTopic] !== 'object') {
-                console.error(`Topic "${currentTopic}" not found or data is invalid in flashcardData.`);
-                cardsInTopic = {};
-                cardKeys = [];
-                currentCardIndex = -1;
+            currentTopicSRSData = []; 
+            currentCardIndex = -1;
+            previousCardId = null;
+            if (!flashcardData || !flashcardData[currentTopic] || typeof flashcardData[currentTopic] !== 'object') {
+                console.error(`Topic "${currentTopic}" not found or data is invalid.`);
             } else {
-                cardsInTopic = flashcardData[currentTopic];
-                cardKeys = Object.keys(cardsInTopic);
+                const topicCards = flashcardData[currentTopic];
+                Object.keys(topicCards).forEach(question => { 
+                    currentTopicSRSData.push({
+                        id: question, 
+                        question: question,
+                        answer: topicCards[question],
+                        box: 1 
+                    });
+                });
             }
-            showNewRandomCard(); // Attempt to show a card (or "no cards" message)
+            updateBoxDisplay(); 
+            showNewRandomCard(); 
         }
 
         function updateCardOrientation() {
-            // Only attempt to flip if a card is meant to be displayed
-            if (cardKeys.length > 0 && currentCardIndex !== -1) {
+            if (currentTopicSRSData.length > 0 && currentCardIndex !== -1 && cardElement) {
                 if (startSide === 'right') {
                     cardElement.classList.add('flipped');
                 } else {
@@ -265,51 +312,95 @@
         }
 
         function displayCard() {
-            if (cardKeys.length === 0 || currentCardIndex < 0 || currentCardIndex >= cardKeys.length) {
-                cardFrontElement.textContent = 'No cards in this topic.';
+            if (!cardFrontElement || !cardBackElement || !cardElement) return; 
+            if (currentTopicSRSData.length === 0 || currentCardIndex < 0 || currentCardIndex >= currentTopicSRSData.length) {
+                let message = 'All cards reviewed for this topic! Select another or reset.';
+                if (currentTopicSRSData.length > 0 && !currentTopicSRSData.some(c => c.box < 5)) {
+                     message = 'Congratulations! All cards mastered for this topic!';
+                }
+                cardFrontElement.textContent = message;
                 cardBackElement.textContent = '';
-                cardElement.classList.remove('flipped'); // Ensure base state if no card or invalid index
+                cardElement.classList.remove('flipped'); 
             } else {
-                const cardFront = cardKeys[currentCardIndex];
-                const cardBack = cardsInTopic[cardFront];
-                cardFrontElement.textContent = cardFront;
-                cardBackElement.textContent = cardBack;
+                const cardToDisplay = currentTopicSRSData[currentCardIndex];
+                cardFrontElement.textContent = cardToDisplay.question;
+                cardBackElement.textContent = cardToDisplay.answer;
                 updateCardOrientation(); 
             }
+            updateBoxDisplay();
             updateButtonStates();
         }
 
-        function flipCard() {
-            if (cardKeys.length > 0 && currentCardIndex !== -1) {
-                cardElement.classList.toggle('flipped');
+        function handleKnowIt() {
+            if (currentCardIndex === -1 || !currentTopicSRSData[currentCardIndex]) return;
+            const card = currentTopicSRSData[currentCardIndex];
+            if (card.box < 5) {
+                card.box++;
             }
+            previousCardId = card.id; 
+            showNewRandomCard();
+        }
+
+        function handleForgot() {
+            if (currentCardIndex === -1 || !currentTopicSRSData[currentCardIndex]) return;
+            const card = currentTopicSRSData[currentCardIndex];
+            if (card.box > 1) {
+                card.box--;
+            }
+            previousCardId = card.id; 
+            showNewRandomCard();
         }
 
         function showNewRandomCard() {
-            if (cardKeys.length === 0) {
-                currentCardIndex = -1; 
-            } else if (cardKeys.length === 1) {
-                currentCardIndex = 0;
-            } else {
-                let newIndex;
-                const previousCardIndex = currentCardIndex; 
-                do {
-                    newIndex = Math.floor(Math.random() * cardKeys.length);
-                } while (newIndex === previousCardIndex && previousCardIndex !== -1); // Ensure new card if previous was valid
-                currentCardIndex = newIndex;
+            let eligibleCards = [];
+            let targetBox = 0;
+            for (let b = 1; b <= 5; b++) {
+                const cardsInBox = currentTopicSRSData.filter(card => card.box === b);
+                if (cardsInBox.length > 0) {
+                    eligibleCards = cardsInBox;
+                    targetBox = b;
+                    break; 
+                }
             }
+            if (eligibleCards.length === 0) {
+                currentCardIndex = -1; 
+                previousCardId = null;
+                displayCard();
+                return;
+            }
+            let potentialNextCards = eligibleCards;
+            if (eligibleCards.length > 1 && previousCardId !== null) {
+                const prevCardObjectInCurrentSRSData = currentTopicSRSData.find(c => c.id === previousCardId);
+                if (prevCardObjectInCurrentSRSData && prevCardObjectInCurrentSRSData.box === targetBox) {
+                    potentialNextCards = eligibleCards.filter(card => card.id !== previousCardId);
+                    if(potentialNextCards.length === 0) potentialNextCards = eligibleCards; 
+                }
+            }
+            const randomIndexInPotential = Math.floor(Math.random() * potentialNextCards.length);
+            const nextCardObject = potentialNextCards[randomIndexInPotential];
+            currentCardIndex = currentTopicSRSData.findIndex(card => card.id === nextCardObject.id);
             displayCard();
         }
         
         function updateButtonStates() {
-            const hasCardsInTopic = cardKeys.length > 0;
-            const isCardDisplayed = hasCardsInTopic && currentCardIndex !== -1;
+            const hasAnyCardsInTopic = currentTopicSRSData.length > 0;
+            const isCardCurrentlyDisplayed = currentCardIndex !== -1 && hasAnyCardsInTopic;
 
-            if (flipCardBtn) {
-                flipCardBtn.disabled = !isCardDisplayed;
-            }
-            if (nextRandomCardBtn) {
-                nextRandomCardBtn.disabled = !hasCardsInTopic;
+            if (flipCardBtn) flipCardBtn.disabled = !isCardCurrentlyDisplayed;
+            // if (nextRandomCardBtn) nextRandomCardBtn.disabled = true; // Already removed its getElementById
+            if (knowItBtn) knowItBtn.disabled = !isCardCurrentlyDisplayed;
+            if (forgotBtn) forgotBtn.disabled = !isCardCurrentlyDisplayed;
+        }
+        
+        function updateBoxDisplay() {
+            const srsBoxesContainer = document.getElementById('srs-boxes-container');
+            if (!srsBoxesContainer) return; 
+            for (let i = 1; i <= 5; i++) {
+                const boxElement = document.getElementById(`srs-box-${i}`);
+                if (boxElement) {
+                    const count = currentTopicSRSData.filter(card => card.box === i).length;
+                    boxElement.textContent = `Box ${i} (${count})`;
+                }
             }
         }
 
@@ -320,35 +411,24 @@
                     startSide = 'left';
                     selectLeftSideBtn.classList.add('active-switch-option');
                     selectRightSideBtn.classList.remove('active-switch-option');
-                    updateCardOrientation(); // Update if a card is showing
+                    updateCardOrientation(); 
                 }
             });
-
             selectRightSideBtn.addEventListener('click', () => {
                 if (startSide !== 'right') {
                     startSide = 'right';
                     selectRightSideBtn.classList.add('active-switch-option');
                     selectLeftSideBtn.classList.remove('active-switch-option');
-                    updateCardOrientation(); // Update if a card is showing
+                    updateCardOrientation(); 
                 }
             });
         }
-
-        if (backToTopicsBtn) {
-            backToTopicsBtn.addEventListener('click', showTopicSelectionView);
-        }
-
-        if (flipCardBtn) {
-            flipCardBtn.addEventListener('click', flipCard);
-        }
-
-        if (nextRandomCardBtn) {
-            nextRandomCardBtn.addEventListener('click', showNewRandomCard);
-        }
+        if (backToTopicsBtn) backToTopicsBtn.addEventListener('click', showTopicSelectionView);
+        if (flipCardBtn) flipCardBtn.addEventListener('click', () => {  if (currentTopicSRSData.length > 0 && currentCardIndex !== -1 && cardElement) cardElement.classList.toggle('flipped'); });
+        if (cardElement) cardElement.addEventListener('click', () => { if (currentTopicSRSData.length > 0 && currentCardIndex !== -1 && flipCardBtn && !flipCardBtn.disabled) cardElement.classList.toggle('flipped'); }); 
         
-        if (cardElement) {
-            cardElement.addEventListener('click', flipCard); 
-        }
+        if (knowItBtn) knowItBtn.addEventListener('click', handleKnowIt);
+        if (forgotBtn) forgotBtn.addEventListener('click', handleForgot);
 
         // Initialize App
         populateTopicRectangles(); 
