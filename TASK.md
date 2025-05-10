@@ -116,8 +116,30 @@ A simple web application to display flashcards. Users can select a topic, view a
 - [ done ] Task 20: Adjust Flashcard Header Spacing
   - [ done ] Task 20.1: (CSS) Set `margin-bottom: 0;` for `.flashcard-header`
   - [ done ] Task 20.2: (CSS) Remove `padding-bottom: 10px;` from `.flashcard-header`
-- [ to do ] Task 21: Remove Alert on Topic Progress Reset
-  - [ to do ] Task 21.1: (JS) Remove the `alert()` call from `handleClearCurrentTopicSRSData` function.
+- [ done ] Task 21: Improve Styles and Responsiveness
+  - [ done ] Task 21.1: (CSS) Apply a more modern font stack and base line-height.
+  - [ done ] Task 21.2: (CSS) Add `box-sizing: border-box;` globally.
+  - [ done ] Task 21.3: (CSS) Add media queries to adjust layout and font sizes for smaller screens (e.g., topic cards, SRS boxes, header elements, card text).
+  - [ done ] Task 21.4: (CSS) Refine button styles (padding, hover/active states) for consistency and usability.
+  - [ done ] Task 21.5: (CSS) General review of spacing and visual hierarchy.
+- [ done ] Task 22: Relocate SRS Box Display to Bottom
+  - [ done ] Task 22.1: (HTML) Move the `#srs-boxes-container` div to below the `.navigation-buttons` div.
+  - [ done ] Task 22.2: (CSS) Adjust margins and borders for `#srs-boxes-container` for its new position at the bottom.
+- [ done ] Task 23: UI and Styling Refinements
+  - [ done ] Task 23.1: (CSS) Remove `padding-bottom` from `.flashcard-header`.
+  - [ done ] Task 23.2: (HTML & JS) Display the current `activeLearningBox` number in the UI.
+  - [ done ] Task 23.3: (CSS) Differentiate card front/back with background colors.
+  - [ done ] Task 23.4: (CSS) Make the Left/Right switch options use these same background colors when active.
+- [ done ] Task 24: Change Active Learning Box Indication to Box Highlighting
+  - [ done ] Task 24.1: (HTML) Remove the `<p id=\"current-learning-box-display\" class=\"learning-box-info\"></p>` element.
+  - [ done ] Task 24.2: (CSS) Remove the `.learning-box-info` CSS rule. Create a new rule for `.srs-box.active-srs-box` (e.g., `background-color: #cce5ff; color: #004085; border-color: #b8daff; font-weight: bold;`).
+  - [ done ] Task 24.3: (CSS) Adjust `.topic-title-wrapper` if its `flex-direction` was only for the removed text.
+  - [ done ] Task 24.4: (JS) Remove JS related to `currentLearningBoxDisplay` text element.
+  - [ done ] Task 24.5: (JS) Modify `updateBoxDisplay()` to add/remove `.active-srs-box` class from the correct SRS box div based on `activeLearningBox`.
+- [ done ] Task 25: Fix Side Switch Display & Remove Flip Card Button
+  - [ done ] Task 25.1: (CSS) Correct CSS for `.side-selector-switch` to ensure visibility and right-alignment in the header.
+  - [ done ] Task 25.2: (HTML) Remove the "Flip Card" button.
+  - [ done ] Task 25.3: (JS) Remove `flipCardBtn` constant, its event listener, and its state management in `updateButtonStates`. (Keep `flipCard()` if card click still flips).
 
 ## Implementation plan
 
@@ -240,81 +262,27 @@ List of tasks in implementation order and detailed description.
 20. Task 20: Adjust Flashcard Header Spacing
     a. Task 20.1: (CSS) Set `margin-bottom: 0;` for `.flashcard-header`
     b. Task 20.2: (CSS) Remove `padding-bottom: 10px;` from `.flashcard-header`
-21. Task 21: Remove Alert on Topic Progress Reset
-    a. Task 21.1: (JS) In the `handleClearCurrentTopicSRSData` function in `index.html`, delete the line `alert(\`Progress for topic \"\${topicToClear}\" has been reset.\`);`.
-
-## All relevant files
-
-List of files which gonna by added or updated.
-
-Task 5.1, 5.2, 5.3, 5.4:
-+   TASK.md to add
-
-Task 2.1, 2.2:
-+   dictionary.js to add
-
-Task 1.1, 1.2, 1.3, 1.4, 1.5:
-+   index.html to add
-
-Task 3.1, 3.2, 3.3, 3.4, 3.5:
-+/- index.html to update (if script is inline)
-OR
-+ script.js to add (if script is external)
-+/- index.html to update (to link script.js)
-
-Task 4.1:
-+/- index.html to update (if style is inline or in head)
-OR
-+ style.css to add (if style is external)
-+/- index.html to update (to link style.css)
-
-Task 6.1, 6.2:
-+/- index.html to update (JavaScript logic)
-
-Task 7.1, 7.2:
-+/- dictionary.js to update (add more data)
-
-Task 8.1, 8.2, 8.3, 8.4, 8.5:
-+/- index.html to update (HTML and JavaScript logic)
-
-Task 9.1:
-+/- index.html to update (JavaScript logic)
-
-Task 10.1, 10.2, 10.3, 10.4, 10.5:
-+/- index.html to update (HTML, CSS, and JavaScript logic)
-
-Task 11.1 - 11.8:
-+/- index.html to update (Major HTML, CSS, and JavaScript refactor)
-
-Task 12.1, 12.2, 12.3:
-+/- index.html to update (HTML and CSS changes)
-
-Task 13.1 - 13.12:
-+/- index.html to update (Major HTML, CSS, and JavaScript refactor)
-
-Task 14.1 - 14.8:
-+/- index.html to update (HTML, CSS, and JavaScript changes for localStorage)
-
-Task 15.1:
-+/- index.html to update (JavaScript logic change for `handleForgot`)
-
-Task 15.1 - 15.4:
-+/- index.html to update (JavaScript: `activeLearningBox`, `loadCardsForTopic`, `showNewRandomCard` major refactor)
-
-Task 16.1 - 16.6:
-+/- index.html to update (HTML, CSS, JavaScript changes for clear topic progress button)
-
-Task 17.1 - 17.4:
-+/- index.html to update (HTML, CSS changes for reset icon button)
-
-Task 18.1 - 18.3:
-+/- index.html to update (HTML & CSS for header layout refinement)
-
-Task 19.1 - 19.3:
-+/- index.html to update (CSS for advanced header centering)
-
-Task 20.1 - 20.2:
-+/- index.html to update (CSS for header spacing adjustment)
-
-Task 21.1:
-+/- index.html to update (JS: remove alert) 
+21. Task 21: Improve Styles and Responsiveness
+    a. Task 21.1: (CSS) Apply a more modern font stack and base line-height.
+    b. Task 21.2: (CSS) Add `box-sizing: border-box;` globally.
+    c. Task 21.3: (CSS) Add media queries to adjust layout and font sizes for smaller screens (e.g., topic cards, SRS boxes, header elements, card text).
+    d. Task 21.4: (CSS) Refine button styles (padding, hover/active states) for consistency and usability.
+    e. Task 21.5: (CSS) General review of spacing and visual hierarchy.
+22. Task 22: Relocate SRS Box Display to Bottom
+    a. Task 22.1: (HTML) Move the `#srs-boxes-container` div to below the `.navigation-buttons` div.
+    b. Task 22.2: (CSS) Adjust margins and borders for `#srs-boxes-container` for its new position at the bottom.
+23. Task 23: UI and Styling Refinements
+    a. Task 23.1: (CSS) Remove `padding-bottom` from `.flashcard-header`.
+    b. Task 23.2: (HTML & JS) Display the current `activeLearningBox` number in the UI.
+    c. Task 23.3: (CSS) Differentiate card front/back with background colors.
+    d. Task 23.4: (CSS) Make the Left/Right switch options use these same background colors when active.
+24. Task 24: Change Active Learning Box Indication to Box Highlighting
+    a. Task 24.1: (HTML) Remove the `<p id=\"current-learning-box-display\" class=\"learning-box-info\"></p>` element.
+    b. Task 24.2: (CSS) Remove the `.learning-box-info` CSS rule. Create a new rule for `.srs-box.active-srs-box` (e.g., `background-color: #cce5ff; color: #004085; border-color: #b8daff; font-weight: bold;`).
+    c. Task 24.3: (CSS) Adjust `.topic-title-wrapper` if its `flex-direction` was only for the removed text.
+    d. Task 24.4: (JS) Remove JS related to `currentLearningBoxDisplay` text element.
+    e. Task 24.5: (JS) Modify `updateBoxDisplay()` to add/remove `.active-srs-box` class from the correct SRS box div based on `activeLearningBox`.
+25. Task 25: Fix Side Switch Display & Remove Flip Card Button
+    a. Task 25.1: (CSS) Review `.flashcard-header`, `.topic-title-wrapper`, and `.side-selector-switch` styles. The `.side-selector-switch` is absolutely positioned. Ensure its `right` and `top`/`transform` properties are correct and that it's not being obscured (e.g., by a `z-index` issue or if `.topic-title-wrapper` is unintentionally overlapping it due to width calculations). Add `z-index: 1;` to `#side-selector-switch` and `#back-to-topics-btn` if needed to ensure they are above the title wrapper if it spans full width.
+    b. Task 25.2: (HTML) In `index.html`, remove `<button id=\"flip-card-btn\" disabled>Flip Card</button>` from the `.navigation-buttons` div.
+    c. Task 25.3: (JS) Remove the `const flipCardBtn = document.getElementById('flip-card-btn');` line. Remove the event listener `if (flipCardBtn) flipCardBtn.addEventListener('click', ...);`. Remove the line `if (flipCardBtn) flipCardBtn.disabled = !isCardCurrentlyDisplayed;` from `updateButtonStates()`. The `flipCard()` function itself will be kept as `cardElement.addEventListener('click', flipCard)` is still present. 

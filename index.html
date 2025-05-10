@@ -6,191 +6,358 @@
     <title>Flashcard App</title>
     <script src="dictionary.js"></script>
     <style>
-        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; margin-top: 20px; background-color: #f4f4f4; color: #333; }
-        .app-container { background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); width: 90%; max-width: 500px; }
-        h1, h2 { text-align: center; color: #333; margin-top: 0; margin-bottom: 0.5rem; }
+        :root {
+            --card-front-bg: #e3f2fd; /* Light blue for front */
+            --card-back-bg: #fff9c4;  /* Light yellow for back */
+            --active-switch-text-color: #111;
+            --inactive-switch-text-color: #495057;
+            --active-srs-box-bg: #cce5ff; /* Example: Light info blue */
+            --active-srs-box-text: #004085;
+            --active-srs-box-border: #b8daff;
+        }
+        /* Global Resets and Base Styles */
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 20px; /* Replaces margin-top on body */
+            background-color: #f0f2f5; /* Slightly softer background */
+            color: #333;
+            min-height: 100vh;
+        }
+        .app-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px; /* Slightly more rounded */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 550px; /* Slightly increased max-width */
+            margin-bottom: 20px;
+        }
+        h1, h2 {
+            text-align: center;
+            color: #333;
+            margin-top: 0;
+            margin-bottom: 0.8rem; /* Consistent heading bottom margin */
+        }
+        h1 { font-size: 1.8em; }
+        h2 { font-size: 1.4em; }
 
         /* Topic Selection View */
-        #topic-selection-view { /* Initially visible by default */ }
+        #topic-selection-view {}
         #topic-cards-container {
             display: flex;
             flex-wrap: wrap;
             gap: 15px;
             justify-content: center;
             margin-top: 20px;
-            margin-bottom: 20px; 
+            margin-bottom: 20px;
         }
         .topic-card {
             background-color: #007bff;
             color: white;
-            padding: 20px;
+            padding: 25px 20px; /* Increased padding */
             border-radius: 8px;
             cursor: pointer;
-            min-width: 120px;
+            min-width: 130px; /* Slightly wider */
             text-align: center;
             font-size: 1.1em;
-            transition: background-color 0.3s ease, transform 0.2s ease;
+            font-weight: 500; /* Bolder topic names */
+            transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
         .topic-card:hover {
-            background-color: #0056b3;
-            transform: translateY(-3px);
+            background-color: #0069d9;
+            transform: translateY(-4px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         
         /* Flashcard View */
-        #flashcard-view { display: none; /* Initially hidden */ }
+        #flashcard-view { display: none; }
         .flashcard-header {
-            display: flex; /* Still flex for vertical alignment of children by default */
-            align-items: center; /* Vertically align all items in the header */
-            margin-bottom: 0; /* Changed from 15px */
-            border-bottom: 1px solid #eee;
-            position: relative; /* Context for absolute positioning */
-            min-height: 40px; /* Ensure header has some height for absolute positioning */
+            display: flex;
+            align-items: center;
+            margin-bottom: 0;
+            border-bottom: 1px solid #e9ecef; /* Lighter border */
+            position: relative;
+            min-height: 45px; /* Slightly increased min-height */
+            padding: 5px 0; /* Add some base vertical padding */
         }
         #back-to-topics-btn {
             position: absolute;
-            left: 0px; /* Adjust for desired padding from edge */
+            left: 0px;
             top: 50%;
             transform: translateY(-50%);
             background: none;
             border: none;
             color: #007bff;
-            font-size: 1.5em; 
+            font-size: 1.6em;
             cursor: pointer;
-            padding: 0 5px; 
-            flex-shrink: 0; 
-            line-height: 1; 
+            padding: 0 8px;
+            flex-shrink: 0;
+            line-height: 1;
+            z-index: 2; /* Ensure it's above title wrapper */
         }
         #back-to-topics-btn:hover { color: #0056b3; }
         
         .topic-title-wrapper {
             display: flex;
-            align-items: center; /* Vertically center topic name and icon */
-            justify-content: center; /* Horizontally center within this wrapper */
-            width: 100%; /* Allow this wrapper to span full width for true centering */
-            text-align: center; 
-            overflow: hidden; 
-        }
-        #current-topic-display { 
-            font-size: 1.2em; 
-            font-weight: bold; 
-            color: #333; 
-            margin-right: 8px; 
-            margin-bottom: 0;
-            white-space: nowrap; 
+            flex-direction: column; /* Stack title and learning box info */
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            text-align: center;
             overflow: hidden;
-            text-overflow: ellipsis; 
-            max-width: calc(100% - 40px); /* Prevent overlap with icon if very long */
+            /* No specific z-index, should be behind absolute elements if they overlap */
         }
-        #clear-srs-storage-btn { 
+        #current-topic-display {
+            font-size: 1.25em;
+            font-weight: 600;
+            color: #333;
+            margin-right: 8px; /* Space before reset icon */
+            margin-bottom: 0; /* Reset for stacking */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: calc(100% - 60px); /* Adjusted to make space for icon and L/R switch */
+        }
+        #clear-srs-storage-btn {
             background: none;
             border: none;
-            color: #6c757d; 
-            font-size: 1.3em; 
+            color: #6c757d;
+            font-size: 1.1em; /* Slightly smaller to fit better with text */
             cursor: pointer;
-            padding: 0; 
+            padding: 0 3px; /* Minimal padding */
             flex-shrink: 0;
             line-height: 1;
-            /* margin-left is handled by current-topic-display's margin-right */
+            transition: color 0.2s ease;
+            /* z-index: 1; Can be added if it needs to be above something within its own wrapper */
         }
-        #clear-srs-storage-btn:hover { color: #545b62; }
-        #clear-srs-storage-btn:disabled { color: #cccccc; cursor: not-allowed;}
+        #clear-srs-storage-btn:hover { color: #343a40; }
+        #clear-srs-storage-btn:disabled { color: #ced4da; cursor: not-allowed; }
         
+        .learning-box-info {
+            font-size: 0.8em;
+            color: #6c757d;
+            margin-top: -2px; /* Adjust for closer spacing to topic title */
+            height: 1.2em; /* Reserve space to prevent layout shift */
+        }
+
         .side-selector-switch {
             position: absolute;
-            right: 0px; /* Adjust for desired padding from edge */
+            right: 0px;
             top: 50%;
             transform: translateY(-50%);
             display: flex;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
             overflow: hidden;
-            flex-shrink: 0; 
+            flex-shrink: 0;
+            z-index: 2; /* Ensure it's above title wrapper */
         }
-
-        button:not(#back-to-topics-btn):not(#clear-srs-storage-btn) { padding: 10px; margin-top: 5px; border-radius: 5px; border: 1px solid #ddd; font-size: 16px; background-color: #007bff; color: white; cursor: pointer; transition: background-color 0.3s ease; }
-        button:not(#back-to-topics-btn):not(#clear-srs-storage-btn):hover { background-color: #0056b3; }
-        button:disabled:not(#back-to-topics-btn):not(#clear-srs-storage-btn) { background-color: #cccccc; cursor: not-allowed; }
-        #forgot-btn { background-color: #dc3545; }
-        #forgot-btn:hover { background-color: #c82333; }
-        #know-it-btn { background-color: #28a745; }
-        #know-it-btn:hover { background-color: #218838; }
-        
         .switch-option {
-            padding: 6px 10px; 
+            padding: 7px 12px;
             cursor: pointer;
-            background-color: #f0f0f0;
-            color: #555;
-            transition: background-color 0.3s ease, color 0.3s ease;
+            background-color: #e9ecef;
+            color: var(--inactive-switch-text-color);
+            transition: background-color 0.2s ease, color 0.2s ease;
             text-align: center;
-            font-size: 0.9em; 
+            font-size: 0.85em;
+            font-weight: 500;
         }
-        .switch-option:first-child { border-right: 1px solid #ccc; }
-        .switch-option.active-switch-option {
-            background-color: #007bff;
-            color: white;
+        .switch-option:first-child { border-right: 1px solid #ced4da; }
+        
+        #select-left-side.active-switch-option {
+            background-color: var(--card-front-bg);
+            color: var(--active-switch-text-color);
+            font-weight: bold;
+        }
+        #select-right-side.active-switch-option {
+            background-color: var(--card-back-bg);
+            color: var(--active-switch-text-color);
+            font-weight: bold;
+        }
+        .switch-option:not(.active-switch-option):hover {
+            background-color: #dde2e6;
         }
 
         #srs-boxes-container {
             display: flex;
-            justify-content: space-around;
-            margin-bottom: 15px; 
+            justify-content: space-between; 
             padding: 10px 0;
-            border-bottom: 1px solid #eee;
+            border-top: 1px solid #e9ecef; /* Added border-top for separation */
+            margin-top: 20px; /* Added margin-top for spacing from buttons */
+            gap: 5px; 
         }
         .srs-box {
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 0.9em;
-            background-color: #f9f9f9;
-            min-width: 60px; 
+            padding: 8px 10px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 0.85em;
+            background-color: #f8f9fa;
             text-align: center;
+            flex-grow: 1; 
+            flex-basis: 0; 
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        .srs-box.active-srs-box {
+            background-color: var(--active-srs-box-bg);
+            color: var(--active-srs-box-text);
+            border-color: var(--active-srs-box-border);
+            font-weight: bold;
         }
 
-        .flashcard-area { margin-top: 10px; }
+        .flashcard-area { margin-top: 15px; /* Adjusted slightly */ }
         .card {
             width: 100%;
-            min-height: 150px;
-            border: 1px solid #ddd;
+            min-height: 180px; 
+            border: 1px solid #dee2e6;
             border-radius: 8px;
             display: flex;
             justify-content: center;
             align-items: center;
             text-align: center;
-            font-size: 1.5em;
-            padding: 20px;
+            font-size: 1.6em;
+            padding: 25px;
             box-sizing: border-box;
             cursor: pointer;
-            background-color: #e9ecef;
+            background-color: #fff; 
             position: relative;
             perspective: 1000px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
         .card-face {
             position: absolute;
-            width: calc(100% - 40px);
-            height: calc(100% - 40px);
+            width: 100%; /* Faces take full card width/height */
+            height: 100%;
+            border-radius: inherit; /* Inherit border radius from parent .card */
             backface-visibility: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 20px; /* Padding inside the face */
             transition: transform 0.6s;
             transform-style: preserve-3d;
+            box-sizing: border-box;
         }
         .card-front {
-            background-color: #f8f9fa;
+            background-color: var(--card-front-bg);
         }
         .card-back {
-            background-color: #e2e6ea;
+            background-color: var(--card-back-bg);
             transform: rotateY(180deg);
         }
-        .card.flipped .card-front {
-            transform: rotateY(180deg);
+        .card.flipped .card-front { transform: rotateY(180deg); }
+        .card.flipped .card-back { transform: rotateY(360deg); }
+        
+        .navigation-buttons { margin-top: 20px; display: flex; justify-content: space-around; gap: 10px; }
+        /* General Button Styles (excluding icon buttons and switch) */
+        button:not(#back-to-topics-btn):not(#clear-srs-storage-btn) {
+            padding: 12px 18px;
+            margin-top: 5px;
+            border-radius: 6px;
+            border: 1px solid transparent;
+            font-size: 1em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
         }
-        .card.flipped .card-back {
-            transform: rotateY(360deg); 
+        button:not(#back-to-topics-btn):not(#clear-srs-storage-btn):hover {
+            transform: translateY(-1px);
         }
-        .navigation-buttons { margin-top: 15px; display: flex; justify-content: space-around; gap: 10px;  }
+        button:not(#back-to-topics-btn):not(#clear-srs-storage-btn):active {
+            transform: translateY(0px);
+        }
+        button:disabled:not(#back-to-topics-btn):not(#clear-srs-storage-btn) { 
+            background-color: #e9ecef;
+            color: #6c757d;
+            border-color: #ced4da;
+            cursor: not-allowed; 
+            transform: none;
+        }
+
+        #flip-card-btn { background-color: #007bff; color: white; border-color: #007bff; }
+        #flip-card-btn:hover { background-color: #0069d9; border-color: #0062cc; }
+
+        #forgot-btn { background-color: #dc3545; color: white; border-color: #dc3545; }
+        #forgot-btn:hover { background-color: #c82333; border-color: #bd2130; }
+        
+        #know-it-btn { background-color: #28a745; color: white; border-color: #28a745; }
+        #know-it-btn:hover { background-color: #218838; border-color: #1e7e34; }
+
+        /* Media Queries for Responsiveness */
+        @media (max-width: 600px) {
+            body { padding-top: 10px; }
+            .app-container {
+                width: 95%;
+                padding: 15px;
+            }
+            h1 { font-size: 1.6em; }
+            h2 { font-size: 1.2em; }
+            .topic-card {
+                width: 100%; /* Full width on small screens */
+                padding: 20px 15px;
+                font-size: 1em;
+                min-width: 0;
+            }
+            .flashcard-header {
+                padding-bottom: 8px; 
+                min-height: 40px;
+                padding: 3px 0; /* Adjusted vertical padding */
+            }
+            #back-to-topics-btn { font-size: 1.4em; padding: 0 3px;}
+            #current-topic-display { font-size: 1.0em; margin-right: 5px; max-width: calc(100% - 50px); }
+            #clear-srs-storage-btn { font-size: 1.1em; padding: 0 3px; margin-left: 3px;}
+            .switch-option { padding: 6px 8px; font-size: 0.8em; }
+
+            #srs-boxes-container {
+                gap: 5px; /* Keep gap for wrapped items */
+                flex-wrap: wrap; /* Allow boxes to wrap */
+                margin-top: 15px;
+                margin-bottom: 15px;
+            }
+            .srs-box {
+                margin-bottom: 5px; /* Add margin when they wrap */
+                padding: 6px 8px; /* Adjust padding */
+                font-size: 0.75em;
+            }
+            .card {
+                min-height: 150px;
+                font-size: 1.3em;
+                padding: 20px;
+            }
+            .navigation-buttons button:not(#back-to-topics-btn):not(#clear-srs-storage-btn) {
+                padding: 10px 12px;
+                font-size: 0.9em;
+            }
+        }
+
+        @media (max-width: 400px) {
+             #current-topic-display { font-size: 0.9em; }
+             .card { font-size: 1.2em; min-height: 120px; }
+             .navigation-buttons {
+                 flex-direction: column; /* Stack main action buttons */
+                 gap: 8px;
+             }
+             .navigation-buttons button:not(#back-to-topics-btn):not(#clear-srs-storage-btn) {
+                width: 100%; /* Make buttons full width when stacked */
+             }
+             #srs-boxes-container { 
+                margin-top: 10px; 
+                /* Still allow wrap, but ensure some spacing for single row if possible */
+             }
+             .srs-box { font-size: 0.7em; padding: 5px 6px; }
+        }
+
     </style>
 </head>
 <body>
@@ -213,14 +380,6 @@
                 </div>
             </div>
             
-            <div id="srs-boxes-container">
-                <div id="srs-box-1" class="srs-box">Box 1 (0)</div>
-                <div id="srs-box-2" class="srs-box">Box 2 (0)</div>
-                <div id="srs-box-3" class="srs-box">Box 3 (0)</div>
-                <div id="srs-box-4" class="srs-box">Box 4 (0)</div>
-                <div id="srs-box-5" class="srs-box">Box 5 (0)</div>
-            </div>
-
             <div class="flashcard-area">
                 <div id="card" class="card">
                     <div id="card-front" class="card-face card-front">Select a topic to start</div>
@@ -229,8 +388,14 @@
             </div>
             <div class="navigation-buttons">
                 <button id="forgot-btn" disabled>I forgot :c</button>
-                <button id="flip-card-btn" disabled>Flip Card</button>
                 <button id="know-it-btn" disabled>I know it!</button>
+            </div>
+            <div id="srs-boxes-container">
+                <div id="srs-box-1" class="srs-box">Box 1 (0)</div>
+                <div id="srs-box-2" class="srs-box">Box 2 (0)</div>
+                <div id="srs-box-3" class="srs-box">Box 3 (0)</div>
+                <div id="srs-box-4" class="srs-box">Box 4 (0)</div>
+                <div id="srs-box-5" class="srs-box">Box 5 (0)</div>
             </div>
         </div>
     </div>
@@ -246,7 +411,6 @@
         const cardElement = document.getElementById('card');
         const cardFrontElement = document.getElementById('card-front');
         const cardBackElement = document.getElementById('card-back');
-        const flipCardBtn = document.getElementById('flip-card-btn');
         
         const selectLeftSideBtn = document.getElementById('select-left-side');
         const selectRightSideBtn = document.getElementById('select-right-side');
@@ -379,7 +543,7 @@
                 }
             }
             if(currentTopicSRSData.length === 0) activeLearningBox = 0; 
-            updateBoxDisplay(); 
+            updateBoxDisplay();
             showNewRandomCard(); 
         }
 
@@ -399,8 +563,6 @@
                 let message = 'No cards currently available for review in active boxes.';
                 if (currentTopicSRSData.length > 0 && !currentTopicSRSData.some(c => c.box < 5)) {
                      message = 'Congratulations! All cards mastered for this topic!';
-                } else if (currentTopicSRSData.length === 0) {
-                    message = 'This topic is empty or data could not be loaded.';
                 }
                 cardFrontElement.textContent = message;
                 cardBackElement.textContent = '';
@@ -413,6 +575,12 @@
             }
             updateBoxDisplay();
             updateButtonStates();
+        }
+
+        function flipCard() {
+             if (currentTopicSRSData.length > 0 && currentCardIndex !== -1 && cardElement) {
+                cardElement.classList.toggle('flipped');
+            }
         }
 
         function handleKnowIt() {
@@ -503,7 +671,6 @@
             const hasAnyCardsInTopic = currentTopicSRSData.length > 0;
             const isCardCurrentlyDisplayed = currentCardIndex !== -1 && hasAnyCardsInTopic && activeLearningBox !== 0;
 
-            if (flipCardBtn) flipCardBtn.disabled = !isCardCurrentlyDisplayed;
             if (knowItBtn) knowItBtn.disabled = !isCardCurrentlyDisplayed;
             if (forgotBtn) forgotBtn.disabled = !isCardCurrentlyDisplayed;
             if (clearSrsStorageBtn) clearSrsStorageBtn.disabled = !isFlashcardViewActive || !currentTopic; 
@@ -517,6 +684,11 @@
                 if (boxElement) {
                     const count = currentTopicSRSData.filter(card => card.box === i).length;
                     boxElement.textContent = `Box ${i} (${count})`;
+                    if (i === activeLearningBox && activeLearningBox !== 0) {
+                        boxElement.classList.add('active-srs-box');
+                    } else {
+                        boxElement.classList.remove('active-srs-box');
+                    }
                 }
             }
         }
@@ -540,8 +712,7 @@
             });
         }
         if (backToTopicsBtn) backToTopicsBtn.addEventListener('click', showTopicSelectionView);
-        if (flipCardBtn) flipCardBtn.addEventListener('click', () => {  if (currentTopicSRSData.length > 0 && currentCardIndex !== -1 && cardElement) cardElement.classList.toggle('flipped'); });
-        if (cardElement) cardElement.addEventListener('click', () => { if (currentTopicSRSData.length > 0 && currentCardIndex !== -1 && flipCardBtn && !flipCardBtn.disabled) cardElement.classList.toggle('flipped'); }); 
+        if (cardElement) cardElement.addEventListener('click', flipCard);
         
         if (knowItBtn) knowItBtn.addEventListener('click', handleKnowIt);
         if (forgotBtn) forgotBtn.addEventListener('click', handleForgot);
