@@ -8,7 +8,7 @@
     <style>
         body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; margin-top: 20px; background-color: #f4f4f4; color: #333; }
         .app-container { background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); width: 90%; max-width: 500px; }
-        h1, h2 { text-align: center; color: #333; }
+        h1, h2 { text-align: center; color: #333; margin-top: 0; margin-bottom: 0.5rem; }
 
         /* Topic Selection View */
         #topic-selection-view { /* Initially visible by default */ }
@@ -18,6 +18,7 @@
             gap: 15px;
             justify-content: center;
             margin-top: 20px;
+            margin-bottom: 20px; 
         }
         .topic-card {
             background-color: #007bff;
@@ -34,61 +35,94 @@
             background-color: #0056b3;
             transform: translateY(-3px);
         }
-
+        
         /* Flashcard View */
         #flashcard-view { display: none; /* Initially hidden */ }
         .flashcard-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
+            display: flex; /* Still flex for vertical alignment of children by default */
+            align-items: center; /* Vertically align all items in the header */
+            margin-bottom: 0; /* Changed from 15px */
             border-bottom: 1px solid #eee;
+            position: relative; /* Context for absolute positioning */
+            min-height: 40px; /* Ensure header has some height for absolute positioning */
         }
         #back-to-topics-btn {
+            position: absolute;
+            left: 0px; /* Adjust for desired padding from edge */
+            top: 50%;
+            transform: translateY(-50%);
             background: none;
             border: none;
             color: #007bff;
-            font-size: 1.2em; 
+            font-size: 1.5em; 
             cursor: pointer;
-            padding: 5px;
-            flex-shrink: 0; /* Prevent shrinking */
+            padding: 0 5px; 
+            flex-shrink: 0; 
+            line-height: 1; 
         }
-        #back-to-topics-btn:hover { text-decoration: underline; }
+        #back-to-topics-btn:hover { color: #0056b3; }
+        
+        .topic-title-wrapper {
+            display: flex;
+            align-items: center; /* Vertically center topic name and icon */
+            justify-content: center; /* Horizontally center within this wrapper */
+            width: 100%; /* Allow this wrapper to span full width for true centering */
+            text-align: center; 
+            overflow: hidden; 
+        }
         #current-topic-display { 
             font-size: 1.2em; 
             font-weight: bold; 
             color: #333; 
-            text-align: center; /* Ensure topic name is centered */
-            flex-grow: 1; /* Allow topic name to take available space */
-            margin: 0 10px; /* Add some space around topic name */
+            margin-right: 8px; 
+            margin-bottom: 0;
+            white-space: nowrap; 
+            overflow: hidden;
+            text-overflow: ellipsis; 
+            max-width: calc(100% - 40px); /* Prevent overlap with icon if very long */
         }
-
-        /* Removed .controls specific styling as it's no longer used for the switch */
-        /* label styling can be simplified or removed if no other labels use it in this view */
-        /* label { margin-right: 10px; font-weight: bold; display: block; margin-bottom: 5px;} */
-        
-        button:not(#back-to-topics-btn) { padding: 10px; margin-top: 5px; border-radius: 5px; border: 1px solid #ddd; font-size: 16px; background-color: #007bff; color: white; cursor: pointer; transition: background-color 0.3s ease; }
-        button:not(#back-to-topics-btn):hover { background-color: #0056b3; }
-        button:disabled:not(#back-to-topics-btn) { background-color: #cccccc; cursor: not-allowed; }
+        #clear-srs-storage-btn { 
+            background: none;
+            border: none;
+            color: #6c757d; 
+            font-size: 1.3em; 
+            cursor: pointer;
+            padding: 0; 
+            flex-shrink: 0;
+            line-height: 1;
+            /* margin-left is handled by current-topic-display's margin-right */
+        }
+        #clear-srs-storage-btn:hover { color: #545b62; }
+        #clear-srs-storage-btn:disabled { color: #cccccc; cursor: not-allowed;}
         
         .side-selector-switch {
+            position: absolute;
+            right: 0px; /* Adjust for desired padding from edge */
+            top: 50%;
+            transform: translateY(-50%);
             display: flex;
             border: 1px solid #ccc;
             border-radius: 5px;
             overflow: hidden;
-            /* width: fit-content; */ /* Let flexbox in header determine size or set specific small width */
-            flex-shrink: 0; /* Prevent shrinking */
+            flex-shrink: 0; 
         }
+
+        button:not(#back-to-topics-btn):not(#clear-srs-storage-btn) { padding: 10px; margin-top: 5px; border-radius: 5px; border: 1px solid #ddd; font-size: 16px; background-color: #007bff; color: white; cursor: pointer; transition: background-color 0.3s ease; }
+        button:not(#back-to-topics-btn):not(#clear-srs-storage-btn):hover { background-color: #0056b3; }
+        button:disabled:not(#back-to-topics-btn):not(#clear-srs-storage-btn) { background-color: #cccccc; cursor: not-allowed; }
+        #forgot-btn { background-color: #dc3545; }
+        #forgot-btn:hover { background-color: #c82333; }
+        #know-it-btn { background-color: #28a745; }
+        #know-it-btn:hover { background-color: #218838; }
+        
         .switch-option {
-            padding: 6px 10px; /* Slightly reduced padding for smaller switch */
+            padding: 6px 10px; 
             cursor: pointer;
             background-color: #f0f0f0;
             color: #555;
             transition: background-color 0.3s ease, color 0.3s ease;
             text-align: center;
-            font-size: 0.9em; /* Smaller font for the switch */
-            /* flex-grow: 1; */ /* Removed to keep options compact */
+            font-size: 0.9em; 
         }
         .switch-option:first-child { border-right: 1px solid #ccc; }
         .switch-option.active-switch-option {
@@ -99,7 +133,7 @@
         #srs-boxes-container {
             display: flex;
             justify-content: space-around;
-            margin-bottom: 20px;
+            margin-bottom: 15px; 
             padding: 10px 0;
             border-bottom: 1px solid #eee;
         }
@@ -109,11 +143,11 @@
             border-radius: 4px;
             font-size: 0.9em;
             background-color: #f9f9f9;
-            min-width: 60px; /* Ensure boxes have some width */
+            min-width: 60px; 
             text-align: center;
         }
 
-        .flashcard-area { margin-top: 10px; /* Reduced margin as boxes are above */}
+        .flashcard-area { margin-top: 10px; }
         .card {
             width: 100%;
             min-height: 150px;
@@ -156,7 +190,7 @@
         .card.flipped .card-back {
             transform: rotateY(360deg); 
         }
-        .navigation-buttons { margin-top: 15px; display: flex; justify-content: space-around; gap: 10px; /* Add gap */ }
+        .navigation-buttons { margin-top: 15px; display: flex; justify-content: space-around; gap: 10px;  }
     </style>
 </head>
 <body>
@@ -169,7 +203,10 @@
         <div id="flashcard-view">
             <div class="flashcard-header">
                 <button id="back-to-topics-btn" title="Back to topics">&larr;</button>
-                <h2 id="current-topic-display"></h2>
+                <div class="topic-title-wrapper">
+                    <h2 id="current-topic-display"></h2>
+                    <button id="clear-srs-storage-btn" title="Reset Topic Progress">&#x21BB;</button> 
+                </div>
                 <div id="side-selector-switch" class="side-selector-switch">
                     <span id="select-left-side" class="switch-option active-switch-option">Left</span>
                     <span id="select-right-side" class="switch-option">Right</span>
@@ -194,7 +231,6 @@
                 <button id="forgot-btn" disabled>I forgot :c</button>
                 <button id="flip-card-btn" disabled>Flip Card</button>
                 <button id="know-it-btn" disabled>I know it!</button>
-                <!-- Old Next button is removed -->
             </div>
         </div>
     </div>
@@ -205,12 +241,12 @@
         const topicCardsContainer = document.getElementById('topic-cards-container');
         const backToTopicsBtn = document.getElementById('back-to-topics-btn');
         const currentTopicDisplay = document.getElementById('current-topic-display');
+        const clearSrsStorageBtn = document.getElementById('clear-srs-storage-btn'); 
 
         const cardElement = document.getElementById('card');
         const cardFrontElement = document.getElementById('card-front');
         const cardBackElement = document.getElementById('card-back');
         const flipCardBtn = document.getElementById('flip-card-btn');
-        // const nextRandomCardBtn = document.getElementById('next-random-card-btn'); // Removed
         
         const selectLeftSideBtn = document.getElementById('select-left-side');
         const selectRightSideBtn = document.getElementById('select-right-side');
@@ -223,6 +259,39 @@
         let currentTopicSRSData = []; 
         let startSide = 'left'; 
         let previousCardId = null; 
+        let activeLearningBox = 0; 
+
+        const SRS_STORAGE_PREFIX = 'srsData_';
+
+        function saveSRStoLocalStorage(topicName, srsDataArray) {
+            if (!topicName || !srsDataArray) return;
+            try {
+                const srsStatesToStore = srsDataArray.map(card => ({ id: card.id, box: card.box }));
+                localStorage.setItem(`${SRS_STORAGE_PREFIX}${topicName}`, JSON.stringify(srsStatesToStore));
+            } catch (e) {
+                console.error("Error saving SRS data to localStorage:", e);
+            }
+        }
+
+        function loadSRSfromLocalStorage(topicName) {
+            if (!topicName) return null;
+            try {
+                const storedData = localStorage.getItem(`${SRS_STORAGE_PREFIX}${topicName}`);
+                return storedData ? JSON.parse(storedData) : null;
+            } catch (e) {
+                console.error("Error loading SRS data from localStorage:", e);
+                return null;
+            }
+        }
+
+        function handleClearCurrentTopicSRSData() { 
+            if (!currentTopic) {
+                return;
+            }
+            const topicToClear = currentTopic; 
+            localStorage.removeItem(`${SRS_STORAGE_PREFIX}${topicToClear}`);
+            loadCardsForTopic(); 
+        }
 
         function showTopicSelectionView() {
             if (flashcardView) flashcardView.style.display = 'none';
@@ -233,34 +302,29 @@
             currentCardIndex = -1;
             currentTopicSRSData = []; 
             previousCardId = null;
+            activeLearningBox = 0; 
             if (cardElement) cardElement.classList.remove('flipped'); 
-            updateBoxDisplay(); // Clear box display when going to topics
+            updateBoxDisplay(); 
             updateButtonStates(); 
         }
 
         function showFlashcardView() {
             if (topicSelectionView) topicSelectionView.style.display = 'none';
             if (flashcardView) flashcardView.style.display = 'block';
+            updateButtonStates(); 
         }
 
         function populateTopicRectangles() {
-            if (!topicCardsContainer) {
-                console.error("CRITICAL: topicCardsContainer element not found.");
-                return;
-            }
+            if (!topicCardsContainer) return;
             topicCardsContainer.innerHTML = ''; 
             if (typeof flashcardData === 'undefined' || flashcardData === null) {
-                console.error("populateTopicRectangles: flashcardData is undefined or null.");
                 const errorMsgEl = document.createElement('p');
                 errorMsgEl.textContent = "Error: Flashcard data not loaded. Check dictionary.js.";
-                errorMsgEl.style.color = "red";
-                errorMsgEl.style.fontWeight = "bold";
                 topicCardsContainer.appendChild(errorMsgEl);
                 return;
             }
             const topics = Object.keys(flashcardData);
             if (topics.length === 0) {
-                console.warn("populateTopicRectangles: No topics found in flashcardData.");
                 const noTopicsMsgEl = document.createElement('p');
                 noTopicsMsgEl.textContent = "No topics available. Please check your data.";
                 topicCardsContainer.appendChild(noTopicsMsgEl);
@@ -284,19 +348,37 @@
             currentTopicSRSData = []; 
             currentCardIndex = -1;
             previousCardId = null;
+            activeLearningBox = 0; 
+            const loadedSRSStates = loadSRSfromLocalStorage(currentTopic);
             if (!flashcardData || !flashcardData[currentTopic] || typeof flashcardData[currentTopic] !== 'object') {
                 console.error(`Topic "${currentTopic}" not found or data is invalid.`);
             } else {
-                const topicCards = flashcardData[currentTopic];
-                Object.keys(topicCards).forEach(question => { 
+                const topicCardsFromSource = flashcardData[currentTopic];
+                Object.keys(topicCardsFromSource).forEach(question => { 
+                    const cardId = question; 
+                    let boxNumber = 1; 
+                    if (loadedSRSStates) {
+                        const savedState = loadedSRSStates.find(s => s.id === cardId);
+                        if (savedState) {
+                            boxNumber = savedState.box;
+                        }
+                    }
                     currentTopicSRSData.push({
-                        id: question, 
+                        id: cardId, 
                         question: question,
-                        answer: topicCards[question],
-                        box: 1 
+                        answer: topicCardsFromSource[question],
+                        box: boxNumber 
                     });
                 });
             }
+            saveSRStoLocalStorage(currentTopic, currentTopicSRSData); 
+            for (let b = 1; b <= 5; b++) {
+                if (currentTopicSRSData.some(card => card.box === b)) {
+                    activeLearningBox = b;
+                    break;
+                }
+            }
+            if(currentTopicSRSData.length === 0) activeLearningBox = 0; 
             updateBoxDisplay(); 
             showNewRandomCard(); 
         }
@@ -313,10 +395,12 @@
 
         function displayCard() {
             if (!cardFrontElement || !cardBackElement || !cardElement) return; 
-            if (currentTopicSRSData.length === 0 || currentCardIndex < 0 || currentCardIndex >= currentTopicSRSData.length) {
-                let message = 'All cards reviewed for this topic! Select another or reset.';
+            if (currentTopicSRSData.length === 0 || currentCardIndex < 0 || currentCardIndex >= currentTopicSRSData.length || activeLearningBox === 0) {
+                let message = 'No cards currently available for review in active boxes.';
                 if (currentTopicSRSData.length > 0 && !currentTopicSRSData.some(c => c.box < 5)) {
                      message = 'Congratulations! All cards mastered for this topic!';
+                } else if (currentTopicSRSData.length === 0) {
+                    message = 'This topic is empty or data could not be loaded.';
                 }
                 cardFrontElement.textContent = message;
                 cardBackElement.textContent = '';
@@ -338,58 +422,91 @@
                 card.box++;
             }
             previousCardId = card.id; 
+            saveSRStoLocalStorage(currentTopic, currentTopicSRSData);
             showNewRandomCard();
         }
 
         function handleForgot() {
             if (currentCardIndex === -1 || !currentTopicSRSData[currentCardIndex]) return;
             const card = currentTopicSRSData[currentCardIndex];
-            if (card.box > 1) {
+            if (card.box > 1) { 
                 card.box--;
             }
             previousCardId = card.id; 
+            saveSRStoLocalStorage(currentTopic, currentTopicSRSData);
             showNewRandomCard();
         }
 
         function showNewRandomCard() {
-            let eligibleCards = [];
-            let targetBox = 0;
-            for (let b = 1; b <= 5; b++) {
-                const cardsInBox = currentTopicSRSData.filter(card => card.box === b);
-                if (cardsInBox.length > 0) {
-                    eligibleCards = cardsInBox;
-                    targetBox = b;
-                    break; 
+            if (activeLearningBox === 0 && currentTopicSRSData.length > 0) { 
+                 for (let b = 1; b <= 5; b++) {
+                    if (currentTopicSRSData.some(card => card.box === b)) {
+                        activeLearningBox = b;
+                        break;
+                    }
                 }
             }
-            if (eligibleCards.length === 0) {
-                currentCardIndex = -1; 
-                previousCardId = null;
+            
+            if (activeLearningBox === 0 || currentTopicSRSData.length === 0) {
+                currentCardIndex = -1;
+                previousCardId = null; 
                 displayCard();
                 return;
             }
-            let potentialNextCards = eligibleCards;
-            if (eligibleCards.length > 1 && previousCardId !== null) {
-                const prevCardObjectInCurrentSRSData = currentTopicSRSData.find(c => c.id === previousCardId);
-                if (prevCardObjectInCurrentSRSData && prevCardObjectInCurrentSRSData.box === targetBox) {
-                    potentialNextCards = eligibleCards.filter(card => card.id !== previousCardId);
-                    if(potentialNextCards.length === 0) potentialNextCards = eligibleCards; 
+
+            let cardsInActiveBox = currentTopicSRSData.filter(c => c.box === activeLearningBox);
+            let selectableFromActiveBox = cardsInActiveBox;
+
+            if (previousCardId !== null && cardsInActiveBox.length > 1) {
+                const prevCardObject = currentTopicSRSData.find(c => c.id === previousCardId);
+                if (prevCardObject && prevCardObject.box === activeLearningBox) {
+                    selectableFromActiveBox = cardsInActiveBox.filter(card => card.id !== previousCardId);
+                    if (selectableFromActiveBox.length === 0) {
+                        selectableFromActiveBox = cardsInActiveBox; 
+                    }
                 }
             }
-            const randomIndexInPotential = Math.floor(Math.random() * potentialNextCards.length);
-            const nextCardObject = potentialNextCards[randomIndexInPotential];
-            currentCardIndex = currentTopicSRSData.findIndex(card => card.id === nextCardObject.id);
+
+            if (selectableFromActiveBox.length > 0) {
+                const randomIndex = Math.floor(Math.random() * selectableFromActiveBox.length);
+                const nextCardObject = selectableFromActiveBox[randomIndex];
+                currentCardIndex = currentTopicSRSData.findIndex(card => card.id === nextCardObject.id);
+            } else {
+                previousCardId = null; 
+                let newFoundActiveBox = 0;
+                for (let b = 1; b <= 5; b++) {
+                    if (currentTopicSRSData.some(card => card.box === b)) {
+                        newFoundActiveBox = b;
+                        break;
+                    }
+                }
+                activeLearningBox = newFoundActiveBox;
+
+                if (activeLearningBox !== 0) {
+                    const cardsInNewActiveBox = currentTopicSRSData.filter(c => c.box === activeLearningBox);
+                    if (cardsInNewActiveBox.length > 0) {
+                         const randomIndex = Math.floor(Math.random() * cardsInNewActiveBox.length);
+                         const nextCardObject = cardsInNewActiveBox[randomIndex];
+                         currentCardIndex = currentTopicSRSData.findIndex(card => card.id === nextCardObject.id);
+                    } else {
+                        currentCardIndex = -1; 
+                    }
+                } else {
+                    currentCardIndex = -1; 
+                }
+            }
             displayCard();
         }
         
         function updateButtonStates() {
+            const isFlashcardViewActive = flashcardView && getComputedStyle(flashcardView).display !== 'none';
             const hasAnyCardsInTopic = currentTopicSRSData.length > 0;
-            const isCardCurrentlyDisplayed = currentCardIndex !== -1 && hasAnyCardsInTopic;
+            const isCardCurrentlyDisplayed = currentCardIndex !== -1 && hasAnyCardsInTopic && activeLearningBox !== 0;
 
             if (flipCardBtn) flipCardBtn.disabled = !isCardCurrentlyDisplayed;
-            // if (nextRandomCardBtn) nextRandomCardBtn.disabled = true; // Already removed its getElementById
             if (knowItBtn) knowItBtn.disabled = !isCardCurrentlyDisplayed;
             if (forgotBtn) forgotBtn.disabled = !isCardCurrentlyDisplayed;
+            if (clearSrsStorageBtn) clearSrsStorageBtn.disabled = !isFlashcardViewActive || !currentTopic; 
         }
         
         function updateBoxDisplay() {
@@ -404,7 +521,6 @@
             }
         }
 
-        // Event Listeners
         if (selectLeftSideBtn && selectRightSideBtn) {
             selectLeftSideBtn.addEventListener('click', () => {
                 if (startSide !== 'left') {
@@ -429,8 +545,8 @@
         
         if (knowItBtn) knowItBtn.addEventListener('click', handleKnowIt);
         if (forgotBtn) forgotBtn.addEventListener('click', handleForgot);
+        if (clearSrsStorageBtn) clearSrsStorageBtn.addEventListener('click', handleClearCurrentTopicSRSData); 
 
-        // Initialize App
         populateTopicRectangles(); 
         showTopicSelectionView(); 
     </script>
