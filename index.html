@@ -74,11 +74,11 @@
         .topic-card {
             background-color: #007bff;
             color: white;
-            padding: 12px; /* Slightly reduced padding for shorter card */
+            padding: 12px; /* Adjusted padding */
             border-radius: 8px;
             cursor: pointer;
             width: calc(50% - (var(--topic-card-container-gap) / 2)); 
-            height: 100px; /* Reduced height to 100px */
+            height: 100px; /* << REDUCED base height */
             text-align: center;
             font-weight: 500; 
             transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
@@ -86,17 +86,15 @@
             display: flex; 
             flex-direction: column; 
             justify-content: space-between; 
-            overflow: hidden; /* Prevent content spill for safety */
+            overflow: hidden; 
         }
         .topic-card-title {
-            font-size: 1.0em; /* Reverted/Adjusted font size */
-            margin-bottom: 4px; /* Reduced space */
-            /* Allow title to wrap for a couple of lines if needed */
-            word-wrap: break-word; /* Allow long words to break if necessary */
-            /* white-space: normal; (default) */
-            line-height: 1.2; /* Maintained tighter line height */
-            max-height: 3.0em;  /* Adjusted for approx 2-3 lines with 1.0em font */
-            overflow: hidden; /* Hide overflow beyond 2 lines */
+            font-size: 1.0em; /* << REVERTED/ADJUSTED font size */
+            margin-bottom: 4px; 
+            word-wrap: break-word; 
+            line-height: 1.2; 
+            max-height: 3.0em;  /* << ADJUSTED max-height for ~2-3 lines */
+            overflow: hidden; 
         }
         .topic-card:hover {
             background-color: #0069d9;
@@ -106,13 +104,13 @@
         
         .topic-srs-progress {
             display: flex;
-            justify-content: center; /* Centered the indicators */
+            justify-content: center; 
             width: 100%;
-            margin-top: auto; /* Push to bottom of card if using space-between on parent */
-            padding-top: 4px; /* Reduced */
-            border-top: 1px solid rgba(255,255,255,0.2); /* Faint separator */
-            gap: 3px; /* Add small gap between indicators */
-            flex-wrap: wrap; /* Allow wrapping by default if needed */
+            margin-top: auto; 
+            padding-top: 4px; 
+            border-top: 1px solid rgba(255,255,255,0.2); 
+            gap: 3px; 
+            flex-wrap: wrap; 
         }
         .srs-box-indicator {
             font-size: 0.6em; /* Even smaller for fixed card height */
@@ -292,11 +290,12 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px; /* Padding inside the face */
+            padding: 15px; /* Reduced padding to give table more space */ 
             transition: transform 0.6s;
             transform-style: preserve-3d;
             box-sizing: border-box;
-            white-space: pre-line; /* This will respect newline characters */
+            white-space: pre-line; 
+            overflow-y: auto; /* Allow scrolling if table is too tall */
         }
         .card-front {
             background-color: var(--card-front-bg);
@@ -341,6 +340,26 @@
         #know-it-btn { background-color: #28a745; color: white; border-color: #28a745; }
         #know-it-btn:hover { background-color: #218838; border-color: #1e7e34; }
 
+        /* Table styles within flashcards */
+        .flashcard-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0; /* Table will be the main content */
+            /* font-size property removed to inherit from parent */
+            font-size: 0.8em;
+        }
+        .flashcard-table th, .flashcard-table td {
+            border: 1px solid #ccc; /* Lighter border for table */
+            padding: 5px 8px;
+            text-align: center;     /* Horizontal centering */
+            vertical-align: middle; /* Vertical centering */
+        }
+        .flashcard-table th {
+            background-color: #f0f2f5; /* Light grey for header row */
+            font-weight: bold;
+        }
+        /* End Table Styles */
+
         /* Media Queries for Responsiveness */
         @media (max-width: 600px) {
             body { padding-top: 10px; }
@@ -351,13 +370,17 @@
             .topic-card { 
                 width: 100%; 
                 height: auto; 
-                min-height: 90px; /* Reduced min-height for mobile */
+                min-height: 80px; /* << REDUCED mobile min-height */
             }
             .topic-card-title {
                  max-height: none; 
                  font-size: 1em;
             }
-            .topic-srs-progress { padding-top: 6px; /* Ensure this is centered on mobile */ justify-content: center; flex-wrap: wrap; }
+            .topic-srs-progress { 
+                padding-top: 6px; 
+                justify-content: center; /* << ENSURED center for mobile wrapped */ 
+                flex-wrap: wrap; 
+            }
             .srs-box-indicator { font-size: 0.6em; padding: 1px 3px; }
             .flashcard-header { min-height: 40px; padding: 3px 0; }
             #back-to-topics-btn { font-size: 1.4em; padding: 0 3px;}
@@ -367,6 +390,8 @@
             #srs-boxes-container { flex-wrap: wrap; gap: 5px; margin-top: 15px; margin-bottom: 15px; }
             .srs-box { margin-bottom: 5px; padding: 6px 8px; font-size: 0.75em; }
             .card { min-height: 150px; font-size: 1.3em; padding: 20px; }
+            .card-face { padding: 10px; }
+            .flashcard-table th, .flashcard-table td { padding: 4px; }
             .navigation-buttons button:not(#back-to-topics-btn):not(#clear-srs-storage-btn) { padding: 10px 12px; font-size: 0.9em;}
         }
 
@@ -375,8 +400,12 @@
              .card { font-size: 1.2em; min-height: 120px; }
              #srs-boxes-container { margin-top: 10px; }
              .srs-box { font-size: 0.7em; padding: 5px 6px; }
-             .topic-srs-progress { /* justify-content: flex-start; Keep it centered or as per 600px rule */ gap: 3px; }
+             .topic-srs-progress { 
+                justify-content: center; /* << CHANGED from flex-start to center */
+                gap: 3px; 
+            }
              .srs-box-indicator { margin-bottom: 2px; }
+             .flashcard-table th, .flashcard-table td { padding: 3px; }
         }
 
     </style>
@@ -644,6 +673,28 @@
             }
         }
 
+        function renderCardContent(element, content) {
+            element.innerHTML = ''; // Clear previous content
+            if (content.includes('\n')) {
+                const table = document.createElement('table');
+                table.classList.add('flashcard-table');
+                const rows = content.split('\n');
+                rows.forEach((rowString, rowIndex) => {
+                    const row = table.insertRow();
+                    const cells = rowString.split('\t');
+                    cells.forEach(cellString => {
+                        const cell = (rowIndex === 0 && rows.length > 1 && cells.length > 1) ? row.insertCell() : row.insertCell(); // Treat first row as header if multiple rows/cols
+                        // For simplicity, using <td> for all. Could use <th> for first row based on context.
+                        // A more robust way would be a special marker for header rows in the data.
+                        cell.textContent = cellString.trim();
+                    });
+                });
+                element.appendChild(table);
+            } else {
+                element.textContent = content; // Handles single line or pre-line for existing newlines
+            }
+        }
+
         function displayCard() {
             if (!cardFrontElement || !cardBackElement || !cardElement) return; 
             if (currentTopicSRSData.length === 0 || currentCardIndex < 0 || currentCardIndex >= currentTopicSRSData.length || activeLearningBox === 0) {
@@ -651,13 +702,13 @@
                 if (currentTopicSRSData.length > 0 && !currentTopicSRSData.some(c => c.box < 5)) {
                      message = 'Congratulations! All cards mastered for this topic!';
                 }
-                cardFrontElement.textContent = message;
-                cardBackElement.textContent = '';
+                renderCardContent(cardFrontElement, message);
+                renderCardContent(cardBackElement, '');
                 cardElement.classList.remove('flipped'); 
             } else {
                 const cardToDisplay = currentTopicSRSData[currentCardIndex];
-                cardFrontElement.textContent = cardToDisplay.question;
-                cardBackElement.textContent = cardToDisplay.answer;
+                renderCardContent(cardFrontElement, cardToDisplay.question);
+                renderCardContent(cardBackElement, cardToDisplay.answer);
                 updateCardOrientation(); 
             }
             updateBoxDisplay();

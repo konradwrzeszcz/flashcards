@@ -168,6 +168,18 @@ A simple web application to display flashcards. Users can select a topic, view a
   - [ done ] Task 32.1: (Data) Modify `dictionary.js` to structure topics under section keys (e.g., "Grammar", "Basics").
   - [ done ] Task 32.2: (JS) Update `populateTopicRectangles` to iterate through sections and then topics, creating section headers.
   - [ done ] Task 32.3: (CSS) Add styling for section headers in the topic selection view.
+- [ done ] Task 33: Display Structured Card Values as Tables
+  - [ done ] Task 33.1: (JS) Modify `displayCard` to detect tab characters in card values.
+  - [ done ] Task 33.2: (JS) If tabs detected, parse the value string into rows/cells and dynamically build an HTML `<table>`
+  - [ done ] Task 33.3: (JS) Set `innerHTML` of the card face to the generated table.
+  - [ done ] Task 33.4: (CSS) Add styling for tables, `th`, `td` within `.card-face` for readability and responsiveness.
+- [ to do ] Task 34: Equalize Font Size for Table and Non-Table Card Content
+  - [ to do ] Task 34.1: (CSS) In `index.html`, for the `.flashcard-table` CSS rule, remove the `font-size` property. Also, remove any `font-size` properties specifically targeting `.flashcard-table` within the media queries. This will allow the table text to inherit the font size set on `.card` or `.card-face`. Other table styles like borders and padding will remain.
+- [ to do ] Task 31: Revert Table Font Size & Center Cell Text
+  - [ to do ] Task 31.1: (CSS) Remove `font-size` overrides from `.flashcard-table` rules (base and media queries).
+  - [ to do ] Task 31.2: (CSS) Add `text-align: center;` and `vertical-align: middle;` to `.flashcard-table th, .flashcard-table td`.
+- [ to do ] Task 32: Set Table Font Size to 95% of Parent Card Text
+  - [ to do ] Task 32.1: (CSS) Set `font-size: 0.95em;` for `.flashcard-table` for relative sizing.
 
 ## Implementation plan
 
@@ -331,6 +343,13 @@ List of tasks in implementation order and detailed description.
     a. Task 32.1: (Data) Modify `dictionary.js` to structure topics under section keys (e.g., "Grammar", "Basics").
     b. Task 32.2: (JS) Update `populateTopicRectangles` to iterate through sections and then topics, creating section headers.
     c. Task 32.3: (CSS) Add styling for section headers in the topic selection view.
+33. Task 33: Display Structured Card Values as Tables
+    a. Task 33.1: (JS) Modify `displayCard` to detect tab characters in card values.
+    b. Task 33.2: (JS) If tabs detected, parse the value string into rows/cells and dynamically build an HTML `<table>`
+    c. Task 33.3: (JS) Set `innerHTML` of the card face to the generated table.
+    d. Task 33.4: (CSS) Add styling for tables, `th`, `td` within `.card-face` for readability and responsiveness.
+34. Task 34: Equalize Font Size for Table and Non-Table Card Content
+    a. Task 34.1: (CSS) In `index.html`, for the `.flashcard-table` CSS rule, remove the `font-size` property. Also, remove any `font-size` properties specifically targeting `.flashcard-table` within the media queries. This will allow the table text to inherit the font size set on `.card` or `.card-face`. Other table styles like borders and padding will remain.
 
 ## All relevant files
 
@@ -341,8 +360,14 @@ Task 30.1 - 30.2:
 +/- index.html to update (CSS for desktop topic card height reduction)
 
 Task 31.1 - 31.2:
-+/- index.html to update (JS for progress refresh, CSS for font size revert)
++/- index.html to update (CSS for table font size and cell alignment)
 
 Task 32.1 - 32.3:
 +/- dictionary.js to update (restructure data into sections)
 +/- index.html to update (JS in `populateTopicRectangles` and CSS for section headers)
+
+Task 33.1 - 33.4:
++/- index.html to update (JS in `displayCard` to parse and render tables, CSS for table styling)
+
+Task 34.1:
++/- index.html to update (CSS to equalize table font size with card content)
