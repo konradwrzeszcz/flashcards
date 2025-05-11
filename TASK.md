@@ -175,13 +175,15 @@ A simple web application to display flashcards. Users can select a topic, view a
   - [ done ] Task 33.4: (CSS) Add styling for tables, `th`, `td` within `.card-face` for readability and responsiveness.
 - [ to do ] Task 34: Equalize Font Size for Table and Non-Table Card Content
   - [ to do ] Task 34.1: (CSS) In `index.html`, for the `.flashcard-table` CSS rule, remove the `font-size` property. Also, remove any `font-size` properties specifically targeting `.flashcard-table` within the media queries. This will allow the table text to inherit the font size set on `.card` or `.card-face`. Other table styles like borders and padding will remain.
-- [ to do ] Task 31: Revert Table Font Size & Center Cell Text
-  - [ to do ] Task 31.1: (CSS) Remove `font-size` overrides from `.flashcard-table` rules (base and media queries).
-  - [ to do ] Task 31.2: (CSS) Add `text-align: center;` and `vertical-align: middle;` to `.flashcard-table th, .flashcard-table td`.
-- [ to do ] Task 32: Set Table Font Size to 95% of Parent Card Text
-  - [ to do ] Task 32.1: (CSS) Set `font-size: 0.95em;` for `.flashcard-table` for relative sizing.
-- [ done ] Task 32: Ensure Topic Section Headers Span Full Width
-  - [ done ] Task 32.1: (CSS) Adjust .topic-section-header styling to ensure it takes the full width of the #topic-cards-container, forcing topic cards below it.
+- [ done ] Task 35: Delay card content update until flip animation completes
+  - [ done ] Task 35.1: (CSS & JS) Update `.card-face` CSS `transition` to `0.3s`. Update `FLIP_ANIMATION_DURATION` JS constant to `300`.
+  - [ done ] Task 35.2: (JS) Add global `let cardIsShowingAnswer = false;`.
+  - [ done ] Task 35.3: (JS) In `flipCard()`, after `cardElement.classList.toggle('flipped')`, get `isNowFlipped`. Set `cardIsShowingAnswer = (startSide === 'left') ? isNowFlipped : !isNowFlipped;`.
+  - [ done ] Task 35.4: (JS) In `showNewRandomCard()`, at the beginning, set `cardIsShowingAnswer = false;`.
+  - [ done ] Task 35.5: (JS) In `handleKnowIt()` and `handleForgot()`: 
+      i. Check `if (cardIsShowingAnswer)`. 
+      ii. If true: perform flip-back animation (if `startSide === 'left'`, `classList.remove('flipped')`; else `classList.add('flipped')`), then `setTimeout(showNewRandomCard, FLIP_ANIMATION_DURATION)`. 
+      iii. If false: call `showNewRandomCard()` directly.
 
 ## Implementation plan
 
@@ -352,6 +354,15 @@ List of tasks in implementation order and detailed description.
     d. Task 33.4: (CSS) Add styling for tables, `th`, `td` within `.card-face` for readability and responsiveness.
 34. Task 34: Equalize Font Size for Table and Non-Table Card Content
     a. Task 34.1: (CSS) In `index.html`, for the `.flashcard-table` CSS rule, remove the `font-size` property. Also, remove any `font-size` properties specifically targeting `.flashcard-table` within the media queries. This will allow the table text to inherit the font size set on `.card` or `.card-face`. Other table styles like borders and padding will remain.
+35. Task 35: Delay card content update until flip animation completes
+    a. Task 35.1: (CSS & JS) Update `.card-face` CSS `transition` to `0.3s`. Update `FLIP_ANIMATION_DURATION` JS constant to `300`.
+    b. Task 35.2: (JS) Add global `let cardIsShowingAnswer = false;`.
+    c. Task 35.3: (JS) In `flipCard()`, after `cardElement.classList.toggle('flipped')`, get `isNowFlipped`. Set `cardIsShowingAnswer = (startSide === 'left') ? isNowFlipped : !isNowFlipped;`.
+    d. Task 35.4: (JS) In `showNewRandomCard()`, at the beginning, set `cardIsShowingAnswer = false;`.
+    e. Task 35.5: (JS) In `handleKnowIt()` and `handleForgot()`: 
+        i. Check `if (cardIsShowingAnswer)`. 
+        ii. If true: perform flip-back animation (if `startSide === 'left'`, `classList.remove('flipped')`; else `classList.add('flipped')`), then `setTimeout(showNewRandomCard, FLIP_ANIMATION_DURATION)`. 
+        iii. If false: call `showNewRandomCard()` directly.
 
 ## All relevant files
 
@@ -376,3 +387,6 @@ Task 34.1:
 
 Task 32.1:
 +/- index.html to update (CSS for topic section header layout)
+
+Task 35.1 - 35.5:
++/- index.html to update (JS for delayed card content update logic)

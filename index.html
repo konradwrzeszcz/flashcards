@@ -303,7 +303,7 @@
             justify-content: center;
             align-items: center;
             padding: 15px; /* Reduced padding to give table more space */ 
-            transition: transform 0.6s;
+            transition: transform 0.3s; /* << UPDATED DURATION */
             transform-style: preserve-3d;
             box-sizing: border-box;
             white-space: pre-line; 
@@ -491,8 +491,10 @@
         let startSide = 'left'; 
         let previousCardId = null; 
         let activeLearningBox = 0; 
+        let cardIsShowingAnswer = false; // To track if the answer side is currently visible
 
         const SRS_STORAGE_PREFIX = 'srsData_';
+        const FLIP_ANIMATION_DURATION = 300; // Duration of the card flip animation in milliseconds
 
         function saveSRStoLocalStorage(topicKey, srsDataArray) { // topicKey should be unique across sections
             if (!topicKey || !srsDataArray) return;
@@ -734,6 +736,17 @@
         function flipCard() {
              if (currentTopicSRSData.length > 0 && currentCardIndex !== -1 && cardElement) {
                 cardElement.classList.toggle('flipped');
+                const isNowFlipped = cardElement.classList.contains('flipped');
+                if (startSide === 'left') {
+                    // Question on Front. Answer on Back.
+                    // If isNowFlipped, it's showing Back (Answer).
+                    cardIsShowingAnswer = isNowFlipped;
+                } else { // startSide === 'right'
+                    // Question on Back. Answer on Front.
+                    // If isNowFlipped, it's showing Front (Answer). (Back is at 360deg, Front at 180deg from its original 180)
+                    // If !isNowFlipped, it's showing Back (Question). (Back is at 180deg, Front at 0deg from its original 180)
+                    cardIsShowingAnswer = !isNowFlipped;
+                }
             }
         }
 
@@ -746,7 +759,20 @@
             previousCardId = card.id; 
             const uniqueTopicKey = `${currentTopicSection}_${currentTopic}`;
             saveSRStoLocalStorage(uniqueTopicKey, currentTopicSRSData);
-            showNewRandomCard();
+
+            if (cardIsShowingAnswer) {
+                // Animate back to question side
+                if (startSide === 'left') { // If question was on front (card is currently flipped to back/answer)
+                    cardElement.classList.remove('flipped'); // Flip back to front (question)
+                } else { // If question was on back (card is currently not flipped to show back/question)
+                    cardElement.classList.add('flipped');    // Flip back to back (question)
+                }
+                setTimeout(() => {
+                    showNewRandomCard();
+                }, FLIP_ANIMATION_DURATION);
+            } else {
+                showNewRandomCard();
+            }
         }
 
         function handleForgot() {
@@ -758,10 +784,24 @@
             previousCardId = card.id; 
             const uniqueTopicKey = `${currentTopicSection}_${currentTopic}`;
             saveSRStoLocalStorage(uniqueTopicKey, currentTopicSRSData);
-            showNewRandomCard();
+
+            if (cardIsShowingAnswer) {
+                // Animate back to question side
+                if (startSide === 'left') { // If question was on front (card is currently flipped to back/answer)
+                    cardElement.classList.remove('flipped'); // Flip back to front (question)
+                } else { // If question was on back (card is currently not flipped to show back/question)
+                    cardElement.classList.add('flipped');    // Flip back to back (question)
+                }
+                setTimeout(() => {
+                    showNewRandomCard();
+                }, FLIP_ANIMATION_DURATION);
+            } else {
+                showNewRandomCard();
+            }
         }
 
         function showNewRandomCard() {
+            cardIsShowingAnswer = false; // Reset for the new card, which will show its question side
             if (activeLearningBox === 0 && currentTopicSRSData.length > 0) { 
                  for (let b = 1; b <= 5; b++) {
                     if (currentTopicSRSData.some(card => card.box === b)) {
