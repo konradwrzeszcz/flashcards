@@ -144,6 +144,8 @@ A simple web application to display flashcards. Users can select a topic, view a
   - [ done ] Task 26.1: (CSS) Configure `.navigation-buttons` for flex layout to support two full-width-sharing child buttons.
   - [ done ] Task 26.2: (CSS) Apply `flex-grow: 1` and `flex-basis: 0` to `#forgot-btn` and `#know-it-btn` to make them share the full width.
   - [ done ] Task 26.3: (CSS) Ensure these styles override any media query stacking for these specific buttons, so they remain side-by-side on all screen sizes.
+- [ done ] Task 27: Support Multi-line Display for Card Values
+  - [ done ] Task 27.1: (CSS) Apply `white-space: pre-line;` to the card text display elements to respect newline characters.
 
 ## Implementation plan
 
