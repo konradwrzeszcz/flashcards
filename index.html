@@ -67,8 +67,8 @@
             display: flex;
             flex-wrap: wrap;
             gap: var(--topic-card-container-gap);
-            justify-content: center;
-            margin-top: 20px;
+            justify-content: flex-start; /* Align cards to the start for section layout */
+            margin-top: 10px; /* Reduced from 20px as section header has margin */
             margin-bottom: 20px;
         }
         .topic-card {
@@ -347,6 +347,7 @@
             .app-container { width: 95%; padding: 15px; }
             h1 { font-size: 1.6em; }
             h2 { font-size: 1.2em; }
+            .topic-section-header { font-size: 1.1em; margin-top: 20px; }
             .topic-card { 
                 width: 100%; 
                 height: auto; 
@@ -438,7 +439,8 @@
         const knowItBtn = document.getElementById('know-it-btn'); 
         const forgotBtn = document.getElementById('forgot-btn');
 
-        let currentTopic = '';
+        let currentTopic = ''; // Will store the key of the currently selected topic within its section
+        let currentTopicSection = ''; // Will store the key of the currently selected section
         let currentCardIndex = -1; 
         let currentTopicSRSData = []; 
         let startSide = 'left'; 
@@ -447,20 +449,20 @@
 
         const SRS_STORAGE_PREFIX = 'srsData_';
 
-        function saveSRStoLocalStorage(topicName, srsDataArray) {
-            if (!topicName || !srsDataArray) return;
+        function saveSRStoLocalStorage(topicKey, srsDataArray) { // topicKey should be unique across sections
+            if (!topicKey || !srsDataArray) return;
             try {
                 const srsStatesToStore = srsDataArray.map(card => ({ id: card.id, box: card.box }));
-                localStorage.setItem(`${SRS_STORAGE_PREFIX}${topicName}`, JSON.stringify(srsStatesToStore));
+                localStorage.setItem(`${SRS_STORAGE_PREFIX}${topicKey}`, JSON.stringify(srsStatesToStore));
             } catch (e) {
                 console.error("Error saving SRS data to localStorage:", e);
             }
         }
 
-        function loadSRSfromLocalStorage(topicName) {
-            if (!topicName) return null;
+        function loadSRSfromLocalStorage(topicKey) { // topicKey should be unique across sections
+            if (!topicKey) return null;
             try {
-                const storedData = localStorage.getItem(`${SRS_STORAGE_PREFIX}${topicName}`);
+                const storedData = localStorage.getItem(`${SRS_STORAGE_PREFIX}${topicKey}`);
                 return storedData ? JSON.parse(storedData) : null;
             } catch (e) {
                 console.error("Error loading SRS data from localStorage:", e);
@@ -469,12 +471,12 @@
         }
 
         function handleClearCurrentTopicSRSData() { 
-            if (!currentTopic) {
+            if (!currentTopic || !currentTopicSection) {
                 return;
             }
-            const topicToClear = currentTopic; 
-            localStorage.removeItem(`${SRS_STORAGE_PREFIX}${topicToClear}`);
-            loadCardsForTopic(); 
+            const uniqueTopicKey = `${currentTopicSection}_${currentTopic}`;
+            localStorage.removeItem(`${SRS_STORAGE_PREFIX}${uniqueTopicKey}`);
+            loadCardsForTopic(); // This will re-initialize and save the fresh state
         }
 
         function showTopicSelectionView() {
@@ -487,10 +489,12 @@
             currentTopicSRSData = []; 
             previousCardId = null;
             activeLearningBox = 0; 
+            currentTopic = '';
+            currentTopicSection = '';
             if (cardElement) cardElement.classList.remove('flipped'); 
             updateBoxDisplay(); 
             updateButtonStates(); 
-            populateTopicRectangles(); // Refresh topic progress when returning to this view
+            populateTopicRectangles(); 
         }
 
         function showFlashcardView() {
@@ -502,72 +506,85 @@
         function populateTopicRectangles() {
             if (!topicCardsContainer) return;
             topicCardsContainer.innerHTML = ''; 
-            if (typeof flashcardData === 'undefined' || flashcardData === null) {
+            if (typeof flashcardData === 'undefined' || flashcardData === null || Object.keys(flashcardData).length === 0) {
                 const errorMsgEl = document.createElement('p');
-                errorMsgEl.textContent = "Error: Flashcard data not loaded. Check dictionary.js.";
+                errorMsgEl.textContent = "Error: Flashcard data not loaded or is empty. Check dictionary.js.";
                 topicCardsContainer.appendChild(errorMsgEl);
                 return;
             }
-            const topics = Object.keys(flashcardData);
-            if (topics.length === 0) {
-                const noTopicsMsgEl = document.createElement('p');
-                noTopicsMsgEl.textContent = "No topics available. Please check your data.";
-                topicCardsContainer.appendChild(noTopicsMsgEl);
-                return;
-            }
 
-            topics.forEach(topicName => {
-                const topicCard = document.createElement('div');
-                topicCard.classList.add('topic-card');
-                
-                const titleSpan = document.createElement('span');
-                titleSpan.classList.add('topic-card-title');
-                titleSpan.textContent = topicName;
-                topicCard.appendChild(titleSpan);
+            const sections = Object.keys(flashcardData);
+            sections.forEach(sectionName => {
+                const sectionHeader = document.createElement('h3');
+                sectionHeader.classList.add('topic-section-header');
+                sectionHeader.textContent = sectionName;
+                topicCardsContainer.appendChild(sectionHeader);
 
-                const progressDiv = document.createElement('div');
-                progressDiv.classList.add('topic-srs-progress');
-                
-                let srsDataForTopic = loadSRSfromLocalStorage(topicName);
-                let boxCounts = [0,0,0,0,0];
-                let totalCardsInTopic = 0;
-
-                if (flashcardData[topicName]) {
-                    totalCardsInTopic = Object.keys(flashcardData[topicName]).length;
+                const topicsInSection = flashcardData[sectionName];
+                if (typeof topicsInSection !== 'object' || Object.keys(topicsInSection).length === 0) {
+                    const noTopicsMsg = document.createElement('p');
+                    noTopicsMsg.textContent = `No topics in section: ${sectionName}`;
+                    noTopicsMsg.style.width = '100%';
+                    noTopicsMsg.style.textAlign = 'center';
+                    topicCardsContainer.appendChild(noTopicsMsg);
+                    return; // Continue to next section
                 }
 
-                if (srsDataForTopic) {
-                    srsDataForTopic.forEach(cardState => {
-                        if (cardState.box >= 1 && cardState.box <= 5) {
-                            boxCounts[cardState.box - 1]++;
-                        }
-                    });
-                } else if (totalCardsInTopic > 0) {
-                    boxCounts[0] = totalCardsInTopic;
-                }
+                Object.keys(topicsInSection).forEach(topicName => {
+                    const topicCard = document.createElement('div');
+                    topicCard.classList.add('topic-card');
+                    
+                    const titleSpan = document.createElement('span');
+                    titleSpan.classList.add('topic-card-title');
+                    titleSpan.textContent = topicName;
+                    topicCard.appendChild(titleSpan);
 
-                if (totalCardsInTopic > 0) { 
-                    for (let i = 0; i < 5; i++) {
-                        const indicator = document.createElement('span');
-                        indicator.classList.add('srs-box-indicator', `srs-box-indicator-b${i + 1}`);
-                        indicator.textContent = `B${i + 1}:${boxCounts[i]}`;
-                        progressDiv.appendChild(indicator);
+                    const progressDiv = document.createElement('div');
+                    progressDiv.classList.add('topic-srs-progress');
+                    
+                    const uniqueTopicKey = `${sectionName}_${topicName}`;
+                    let srsDataForTopic = loadSRSfromLocalStorage(uniqueTopicKey);
+                    let boxCounts = [0,0,0,0,0];
+                    let totalCardsInThisTopic = 0;
+
+                    if (topicsInSection[topicName]) {
+                        totalCardsInThisTopic = Object.keys(topicsInSection[topicName]).length;
                     }
-                } else {
-                    const noProgressIndicator = document.createElement('span');
-                    noProgressIndicator.classList.add('srs-box-indicator');
-                    noProgressIndicator.textContent = '-';
-                    progressDiv.appendChild(noProgressIndicator);
-                }
-                topicCard.appendChild(progressDiv);
 
-                topicCard.addEventListener('click', () => {
-                    currentTopic = topicName;
-                    if (currentTopicDisplay) currentTopicDisplay.textContent = topicName;
-                    loadCardsForTopic();
-                    showFlashcardView();
+                    if (srsDataForTopic) {
+                        srsDataForTopic.forEach(cardState => {
+                            if (cardState.box >= 1 && cardState.box <= 5) {
+                                boxCounts[cardState.box - 1]++;
+                            }
+                        });
+                    } else if (totalCardsInThisTopic > 0) {
+                        boxCounts[0] = totalCardsInThisTopic;
+                    }
+
+                    if (totalCardsInThisTopic > 0) { 
+                        for (let i = 0; i < 5; i++) {
+                            const indicator = document.createElement('span');
+                            indicator.classList.add('srs-box-indicator', `srs-box-indicator-b${i + 1}`);
+                            indicator.textContent = `B${i + 1}:${boxCounts[i]}`;
+                            progressDiv.appendChild(indicator);
+                        }
+                    } else {
+                        const noProgressIndicator = document.createElement('span');
+                        noProgressIndicator.classList.add('srs-box-indicator');
+                        noProgressIndicator.textContent = '-';
+                        progressDiv.appendChild(noProgressIndicator);
+                    }
+                    topicCard.appendChild(progressDiv);
+
+                    topicCard.addEventListener('click', () => {
+                        currentTopicSection = sectionName;
+                        currentTopic = topicName;
+                        if (currentTopicDisplay) currentTopicDisplay.textContent = topicName; // Display only topic name, not section
+                        loadCardsForTopic();
+                        showFlashcardView();
+                    });
+                    topicCardsContainer.appendChild(topicCard);
                 });
-                topicCardsContainer.appendChild(topicCard);
             });
         }
 
@@ -576,29 +593,36 @@
             currentCardIndex = -1;
             previousCardId = null;
             activeLearningBox = 0; 
-            const loadedSRSStates = loadSRSfromLocalStorage(currentTopic);
-            if (!flashcardData || !flashcardData[currentTopic] || typeof flashcardData[currentTopic] !== 'object') {
-                console.error(`Topic "${currentTopic}" not found or data is invalid.`);
-            } else {
-                const topicCardsFromSource = flashcardData[currentTopic];
-                Object.keys(topicCardsFromSource).forEach(question => { 
-                    const cardId = question; 
-                    let boxNumber = 1; 
-                    if (loadedSRSStates) {
-                        const savedState = loadedSRSStates.find(s => s.id === cardId);
-                        if (savedState) {
-                            boxNumber = savedState.box;
-                        }
-                    }
-                    currentTopicSRSData.push({
-                        id: cardId, 
-                        question: question,
-                        answer: topicCardsFromSource[question],
-                        box: boxNumber 
-                    });
-                });
+
+            if (!currentTopicSection || !currentTopic || !flashcardData[currentTopicSection] || !flashcardData[currentTopicSection][currentTopic]) {
+                console.error(`Topic data not found for Section: "${currentTopicSection}", Topic: "${currentTopic}"`);
+                updateBoxDisplay(); 
+                showNewRandomCard(); 
+                return;
             }
-            saveSRStoLocalStorage(currentTopic, currentTopicSRSData); 
+            
+            const uniqueTopicKey = `${currentTopicSection}_${currentTopic}`;
+            const loadedSRSStates = loadSRSfromLocalStorage(uniqueTopicKey);
+            const topicCardsFromSource = flashcardData[currentTopicSection][currentTopic];
+
+            Object.keys(topicCardsFromSource).forEach(question => { 
+                const cardId = question; 
+                let boxNumber = 1; 
+                if (loadedSRSStates) {
+                    const savedState = loadedSRSStates.find(s => s.id === cardId);
+                    if (savedState) {
+                        boxNumber = savedState.box;
+                    }
+                }
+                currentTopicSRSData.push({
+                    id: cardId, 
+                    question: question,
+                    answer: topicCardsFromSource[question],
+                    box: boxNumber 
+                });
+            });
+            
+            saveSRStoLocalStorage(uniqueTopicKey, currentTopicSRSData); 
             for (let b = 1; b <= 5; b++) {
                 if (currentTopicSRSData.some(card => card.box === b)) {
                     activeLearningBox = b;
@@ -653,7 +677,8 @@
                 card.box++;
             }
             previousCardId = card.id; 
-            saveSRStoLocalStorage(currentTopic, currentTopicSRSData);
+            const uniqueTopicKey = `${currentTopicSection}_${currentTopic}`;
+            saveSRStoLocalStorage(uniqueTopicKey, currentTopicSRSData);
             showNewRandomCard();
         }
 
@@ -664,7 +689,8 @@
                 card.box--;
             }
             previousCardId = card.id; 
-            saveSRStoLocalStorage(currentTopic, currentTopicSRSData);
+            const uniqueTopicKey = `${currentTopicSection}_${currentTopic}`;
+            saveSRStoLocalStorage(uniqueTopicKey, currentTopicSRSData);
             showNewRandomCard();
         }
 

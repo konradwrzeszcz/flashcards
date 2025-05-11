@@ -158,12 +158,16 @@ A simple web application to display flashcards. Users can select a topic, view a
   - [ done ] Task 29.1: (CSS) Adjust `.topic-card` width to achieve a 2-column layout on larger screens.
   - [ done ] Task 29.2: (CSS) Ensure `.topic-card` is `width: 100%;` in mobile view (media query).
   - [ done ] Task 29.3: (CSS) Center the `.topic-srs-progress` bar within the topic card.
-- [ to do ] Task 30: Reduce Topic Card Height on Desktop View
-  - [ to do ] Task 30.1: (CSS) In the base rule for `.topic-card`, change `height: 110px;` to `height: 100px;` (or another preferred shorter value).
-  - [ to do ] Task 30.2: (CSS) In the base rule for `.topic-card-title`, adjust `max-height` from `3.6em` to `2.4em` (to allow for roughly 2 lines of title text within the shorter card). The `font-size` and `line-height` for the title should also be reviewed to ensure they complement this.
-- [ to do ] Task 31: Refresh Topic Progress on Back & Revert Title Font Size
-  - [ to do ] Task 31.1: (JS) Call `populateTopicRectangles()` from `showTopicSelectionView()` to refresh progress.
-  - [ to do ] Task 31.2: (CSS) Revert/adjust `.topic-card-title` font size and potentially `max-height`.
+- [ done ] Task 30: Reduce Topic Card Height on Desktop View
+  - [ done ] Task 30.1: (CSS) In the base rule for `.topic-card`, change `height: 110px;` to `height: 100px;` (or another preferred shorter value).
+  - [ done ] Task 30.2: (CSS) In the base rule for `.topic-card-title`, adjust `max-height` from `3.6em` to `2.4em` (to allow for roughly 2 lines of title text within the shorter card). The `font-size` and `line-height` for the title should also be reviewed to ensure they complement this.
+- [ done ] Task 31: Refresh Topic Progress on Back & Revert Title Font Size
+  - [ done ] Task 31.1: (JS) Call `populateTopicRectangles()` from `showTopicSelectionView()` to refresh progress.
+  - [ done ] Task 31.2: (CSS) Revert/adjust `.topic-card-title` font size and potentially `max-height`.
+- [ done ] Task 32: Group Topics into Sections
+  - [ done ] Task 32.1: (Data) Modify `dictionary.js` to structure topics under section keys (e.g., "Grammar", "Basics").
+  - [ done ] Task 32.2: (JS) Update `populateTopicRectangles` to iterate through sections and then topics, creating section headers.
+  - [ done ] Task 32.3: (CSS) Add styling for section headers in the topic selection view.
 
 ## Implementation plan
 
@@ -323,6 +327,10 @@ List of tasks in implementation order and detailed description.
 31. Task 31: Refresh Topic Progress on Back & Revert Title Font Size
     a. Task 31.1: (JS) Call `populateTopicRectangles()` from `showTopicSelectionView()` to refresh progress.
     b. Task 31.2: (CSS) Revert/adjust `.topic-card-title` font size and potentially `max-height`.
+32. Task 32: Group Topics into Sections
+    a. Task 32.1: (Data) Modify `dictionary.js` to structure topics under section keys (e.g., "Grammar", "Basics").
+    b. Task 32.2: (JS) Update `populateTopicRectangles` to iterate through sections and then topics, creating section headers.
+    c. Task 32.3: (CSS) Add styling for section headers in the topic selection view.
 
 ## All relevant files
 
@@ -334,3 +342,7 @@ Task 30.1 - 30.2:
 
 Task 31.1 - 31.2:
 +/- index.html to update (JS for progress refresh, CSS for font size revert)
+
+Task 32.1 - 32.3:
++/- dictionary.js to update (restructure data into sections)
++/- index.html to update (JS in `populateTopicRectangles` and CSS for section headers)
