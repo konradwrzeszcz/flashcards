@@ -14,6 +14,15 @@
             --active-srs-box-bg: #cce5ff; /* Example: Light info blue */
             --active-srs-box-text: #004085;
             --active-srs-box-border: #b8daff;
+
+            /* Colors for topic card SRS box indicators */
+            --srs-indicator-box1-bg: #f8d7da; /* Light red */
+            --srs-indicator-box2-bg: #fff3cd; /* Light yellow */
+            --srs-indicator-box3-bg: #d1ecf1; /* Light cyan */
+            --srs-indicator-box4-bg: #d4edda; /* Light green */
+            --srs-indicator-box5-bg: #cce5ff; /* Light blue (same as active box) */
+            --srs-indicator-text: #333;
+            --topic-card-container-gap: 15px;
         }
         /* Global Resets and Base Styles */
         html, body {
@@ -57,7 +66,7 @@
         #topic-cards-container {
             display: flex;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: var(--topic-card-container-gap);
             justify-content: center;
             margin-top: 20px;
             margin-bottom: 20px;
@@ -65,15 +74,29 @@
         .topic-card {
             background-color: #007bff;
             color: white;
-            padding: 25px 20px; /* Increased padding */
+            padding: 12px; /* Slightly reduced padding for shorter card */
             border-radius: 8px;
             cursor: pointer;
-            min-width: 130px; /* Slightly wider */
+            width: calc(50% - (var(--topic-card-container-gap) / 2)); 
+            height: 100px; /* Reduced height to 100px */
             text-align: center;
-            font-size: 1.1em;
-            font-weight: 500; /* Bolder topic names */
+            font-weight: 500; 
             transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between; 
+            overflow: hidden; /* Prevent content spill for safety */
+        }
+        .topic-card-title {
+            font-size: 1.0em; /* Reverted/Adjusted font size */
+            margin-bottom: 4px; /* Reduced space */
+            /* Allow title to wrap for a couple of lines if needed */
+            word-wrap: break-word; /* Allow long words to break if necessary */
+            /* white-space: normal; (default) */
+            line-height: 1.2; /* Maintained tighter line height */
+            max-height: 3.0em;  /* Adjusted for approx 2-3 lines with 1.0em font */
+            overflow: hidden; /* Hide overflow beyond 2 lines */
         }
         .topic-card:hover {
             background-color: #0069d9;
@@ -81,6 +104,31 @@
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         
+        .topic-srs-progress {
+            display: flex;
+            justify-content: center; /* Centered the indicators */
+            width: 100%;
+            margin-top: auto; /* Push to bottom of card if using space-between on parent */
+            padding-top: 4px; /* Reduced */
+            border-top: 1px solid rgba(255,255,255,0.2); /* Faint separator */
+            gap: 3px; /* Add small gap between indicators */
+            flex-wrap: wrap; /* Allow wrapping by default if needed */
+        }
+        .srs-box-indicator {
+            font-size: 0.6em; /* Even smaller for fixed card height */
+            padding: 1px 3px;
+            border-radius: 3px;
+            color: var(--srs-indicator-text);
+            line-height: 1.2;
+            /* min-width: 25px; Removed min-width to allow them to be smaller */
+            text-align: center;
+        }
+        .srs-box-indicator-b1 { background-color: var(--srs-indicator-box1-bg); }
+        .srs-box-indicator-b2 { background-color: var(--srs-indicator-box2-bg); }
+        .srs-box-indicator-b3 { background-color: var(--srs-indicator-box3-bg); }
+        .srs-box-indicator-b4 { background-color: var(--srs-indicator-box4-bg); }
+        .srs-box-indicator-b5 { background-color: var(--srs-indicator-box5-bg); }
+
         /* Flashcard View */
         #flashcard-view { display: none; }
         .flashcard-header {
@@ -299,7 +347,17 @@
             .app-container { width: 95%; padding: 15px; }
             h1 { font-size: 1.6em; }
             h2 { font-size: 1.2em; }
-            .topic-card { width: 100%; padding: 20px 15px; font-size: 1em; min-width: 0; }
+            .topic-card { 
+                width: 100%; 
+                height: auto; 
+                min-height: 90px; /* Reduced min-height for mobile */
+            }
+            .topic-card-title {
+                 max-height: none; 
+                 font-size: 1em;
+            }
+            .topic-srs-progress { padding-top: 6px; /* Ensure this is centered on mobile */ justify-content: center; flex-wrap: wrap; }
+            .srs-box-indicator { font-size: 0.6em; padding: 1px 3px; }
             .flashcard-header { min-height: 40px; padding: 3px 0; }
             #back-to-topics-btn { font-size: 1.4em; padding: 0 3px;}
             #current-topic-display { font-size: 1.0em; margin-right: 5px; max-width: calc(100% - 50px); }
@@ -308,10 +366,7 @@
             #srs-boxes-container { flex-wrap: wrap; gap: 5px; margin-top: 15px; margin-bottom: 15px; }
             .srs-box { margin-bottom: 5px; padding: 6px 8px; font-size: 0.75em; }
             .card { min-height: 150px; font-size: 1.3em; padding: 20px; }
-            .navigation-buttons button:not(#back-to-topics-btn):not(#clear-srs-storage-btn) {
-                 padding: 10px 12px; 
-                 font-size: 0.9em;
-            }
+            .navigation-buttons button:not(#back-to-topics-btn):not(#clear-srs-storage-btn) { padding: 10px 12px; font-size: 0.9em;}
         }
 
         @media (max-width: 400px) {
@@ -319,6 +374,8 @@
              .card { font-size: 1.2em; min-height: 120px; }
              #srs-boxes-container { margin-top: 10px; }
              .srs-box { font-size: 0.7em; padding: 5px 6px; }
+             .topic-srs-progress { /* justify-content: flex-start; Keep it centered or as per 600px rule */ gap: 3px; }
+             .srs-box-indicator { margin-bottom: 2px; }
         }
 
     </style>
@@ -433,6 +490,7 @@
             if (cardElement) cardElement.classList.remove('flipped'); 
             updateBoxDisplay(); 
             updateButtonStates(); 
+            populateTopicRectangles(); // Refresh topic progress when returning to this view
         }
 
         function showFlashcardView() {
@@ -457,10 +515,52 @@
                 topicCardsContainer.appendChild(noTopicsMsgEl);
                 return;
             }
+
             topics.forEach(topicName => {
                 const topicCard = document.createElement('div');
                 topicCard.classList.add('topic-card');
-                topicCard.textContent = topicName;
+                
+                const titleSpan = document.createElement('span');
+                titleSpan.classList.add('topic-card-title');
+                titleSpan.textContent = topicName;
+                topicCard.appendChild(titleSpan);
+
+                const progressDiv = document.createElement('div');
+                progressDiv.classList.add('topic-srs-progress');
+                
+                let srsDataForTopic = loadSRSfromLocalStorage(topicName);
+                let boxCounts = [0,0,0,0,0];
+                let totalCardsInTopic = 0;
+
+                if (flashcardData[topicName]) {
+                    totalCardsInTopic = Object.keys(flashcardData[topicName]).length;
+                }
+
+                if (srsDataForTopic) {
+                    srsDataForTopic.forEach(cardState => {
+                        if (cardState.box >= 1 && cardState.box <= 5) {
+                            boxCounts[cardState.box - 1]++;
+                        }
+                    });
+                } else if (totalCardsInTopic > 0) {
+                    boxCounts[0] = totalCardsInTopic;
+                }
+
+                if (totalCardsInTopic > 0) { 
+                    for (let i = 0; i < 5; i++) {
+                        const indicator = document.createElement('span');
+                        indicator.classList.add('srs-box-indicator', `srs-box-indicator-b${i + 1}`);
+                        indicator.textContent = `B${i + 1}:${boxCounts[i]}`;
+                        progressDiv.appendChild(indicator);
+                    }
+                } else {
+                    const noProgressIndicator = document.createElement('span');
+                    noProgressIndicator.classList.add('srs-box-indicator');
+                    noProgressIndicator.textContent = '-';
+                    progressDiv.appendChild(noProgressIndicator);
+                }
+                topicCard.appendChild(progressDiv);
+
                 topicCard.addEventListener('click', () => {
                     currentTopic = topicName;
                     if (currentTopicDisplay) currentTopicDisplay.textContent = topicName;
@@ -506,7 +606,7 @@
                 }
             }
             if(currentTopicSRSData.length === 0) activeLearningBox = 0; 
-            updateBoxDisplay();
+            updateBoxDisplay(); 
             showNewRandomCard(); 
         }
 

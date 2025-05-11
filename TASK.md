@@ -106,16 +106,16 @@ A simple web application to display flashcards. Users can select a topic, view a
   - [ done ] Task 17.3: (CSS) Style the new icon button for subtle appearance and correct alignment in the header.
   - [ done ] Task 17.4: (JS) Ensure existing JS for this button ID works as intended with the new element.
 - [ done ] Task 18: Refine Flashcard Header Layout
-  - [ done ] Task 18.1: (HTML) Group topic name and refresh icon in a new container div within `.flashcard-header`
-  - [ done ] Task 18.2: (CSS) Style the new container to center its content (topic name + icon) and use `flex-grow` to occupy middle space
-  - [ done ] Task 18.3: (CSS) Adjust styles for topic name and refresh icon for better alignment and spacing within their new container
+  - [ done ] Task 18.1: (HTML) Group topic name and refresh icon in a new container div within `.flashcard-header`.
+  - [ done ] Task 18.2: (CSS) Style the new container to center its content (topic name + icon) and use `flex-grow` to occupy middle space.
+  - [ done ] Task 18.3: (CSS) Adjust styles for topic name and refresh icon for better alignment and spacing within their new container.
 - [ done ] Task 19: Advanced Header Centering with Absolute Positioning
   - [ done ] Task 19.1: (CSS) Modify `.flashcard-header` to be `position: relative`.
   - [ done ] Task 19.2: (CSS) Absolutely position `#back-to-topics-btn` to the left and `#side-selector-switch` to the right, vertically centered.
   - [ done ] Task 19.3: (CSS) Ensure `.topic-title-wrapper` (containing topic name and refresh icon) correctly centers its content across the full header width, accounting for the absolutely positioned elements.
 - [ done ] Task 20: Adjust Flashcard Header Spacing
-  - [ done ] Task 20.1: (CSS) Set `margin-bottom: 0;` for `.flashcard-header`
-  - [ done ] Task 20.2: (CSS) Remove `padding-bottom: 10px;` from `.flashcard-header`
+  - [ done ] Task 20.1: (CSS) Set `margin-bottom: 0;` for `.flashcard-header`.
+  - [ done ] Task 20.2: (CSS) Remove `padding-bottom: 10px;` from `.flashcard-header`.
 - [ done ] Task 21: Improve Styles and Responsiveness
   - [ done ] Task 21.1: (CSS) Apply a more modern font stack and base line-height.
   - [ done ] Task 21.2: (CSS) Add `box-sizing: border-box;` globally.
@@ -131,8 +131,8 @@ A simple web application to display flashcards. Users can select a topic, view a
   - [ done ] Task 23.3: (CSS) Differentiate card front/back with background colors.
   - [ done ] Task 23.4: (CSS) Make the Left/Right switch options use these same background colors when active.
 - [ done ] Task 24: Change Active Learning Box Indication to Box Highlighting
-  - [ done ] Task 24.1: (HTML) Remove the `<p id=\"current-learning-box-display\" class=\"learning-box-info\"></p>` element.
-  - [ done ] Task 24.2: (CSS) Remove the `.learning-box-info` CSS rule. Create a new rule for `.srs-box.active-srs-box` (e.g., `background-color: #cce5ff; color: #004085; border-color: #b8daff; font-weight: bold;`).
+  - [ done ] Task 24.1: (HTML) Remove the `<p id="current-learning-box-display" class="learning-box-info"></p>` element.
+  - [ done ] Task 24.2: (CSS) Remove styles for `.learning-box-info`. Add styles for an `.active-srs-box` class.
   - [ done ] Task 24.3: (CSS) Adjust `.topic-title-wrapper` if its `flex-direction` was only for the removed text.
   - [ done ] Task 24.4: (JS) Remove JS related to `currentLearningBoxDisplay` text element.
   - [ done ] Task 24.5: (JS) Modify `updateBoxDisplay()` to add/remove `.active-srs-box` class from the correct SRS box div based on `activeLearningBox`.
@@ -144,8 +144,26 @@ A simple web application to display flashcards. Users can select a topic, view a
   - [ done ] Task 26.1: (CSS) Configure `.navigation-buttons` for flex layout to support two full-width-sharing child buttons.
   - [ done ] Task 26.2: (CSS) Apply `flex-grow: 1` and `flex-basis: 0` to `#forgot-btn` and `#know-it-btn` to make them share the full width.
   - [ done ] Task 26.3: (CSS) Ensure these styles override any media query stacking for these specific buttons, so they remain side-by-side on all screen sizes.
-- [ done ] Task 27: Support Multi-line Display for Card Values
-  - [ done ] Task 27.1: (CSS) Apply `white-space: pre-line;` to the card text display elements to respect newline characters.
+- [ done ] Task 27: Display SRS Box Distribution on Topic Cards
+  - [ done ] Task 27.1: (HTML) Add a container within each topic card for the SRS progress display.
+  - [ done ] Task 27.2: (CSS) Style the progress container and individual box indicators (small font, compact). Define distinct visual representation for each box (e.g. color-coded dots/segments).
+  - [ done ] Task 27.3: (JS) Modify `populateTopicRectangles` to:
+      i. Load SRS data for each topic from localStorage.
+      ii. Count cards in each of the 5 boxes for that topic.
+      iii. Dynamically generate and append the mini-display (dots/segments) to the topic card.
+- [ done ] Task 28: Uniform Size for Topic Cards
+  - [ done ] Task 28.1: (CSS) Set fixed `width` and `height` for `.topic-card`.
+  - [ done ] Task 28.2: (CSS) Ensure content (title and SRS progress) fits or is handled gracefully (e.g., text overflow) within the fixed dimensions.
+- [ done ] Task 29: Refine Topic Card Layout (2-per-row Desktop, 1-per-row Mobile, Centered Progress)
+  - [ done ] Task 29.1: (CSS) Adjust `.topic-card` width to achieve a 2-column layout on larger screens.
+  - [ done ] Task 29.2: (CSS) Ensure `.topic-card` is `width: 100%;` in mobile view (media query).
+  - [ done ] Task 29.3: (CSS) Center the `.topic-srs-progress` bar within the topic card.
+- [ to do ] Task 30: Reduce Topic Card Height on Desktop View
+  - [ to do ] Task 30.1: (CSS) In the base rule for `.topic-card`, change `height: 110px;` to `height: 100px;` (or another preferred shorter value).
+  - [ to do ] Task 30.2: (CSS) In the base rule for `.topic-card-title`, adjust `max-height` from `3.6em` to `2.4em` (to allow for roughly 2 lines of title text within the shorter card). The `font-size` and `line-height` for the title should also be reviewed to ensure they complement this.
+- [ to do ] Task 31: Refresh Topic Progress on Back & Revert Title Font Size
+  - [ to do ] Task 31.1: (JS) Call `populateTopicRectangles()` from `showTopicSelectionView()` to refresh progress.
+  - [ to do ] Task 31.2: (CSS) Revert/adjust `.topic-card-title` font size and potentially `max-height`.
 
 ## Implementation plan
 
@@ -222,3 +240,97 @@ List of tasks in implementation order and detailed description.
     l. Task 13.12: (JS) Remove all references to `nextRandomCardBtn` from JS, including its `getElementById` and event listener (if any was re-added).
 14. Task 14: Persist SRS Box Data in localStorage
     a. Task 14.1: (JS) `saveSRStoLocalStorage(topicName, srsCardStates)`: Takes the `currentTopicSRSData` (which contains full card objects). It should map this to an array of simpler objects `[{id, box}]` to store. It will then `JSON.stringify` this array and save it to `localStorage` under the key `
+15. Task 15: Refine SRS Logic for "I forgot" and Box Prioritization
+    a. Task 15.1: (JS) Modify `handleForgot()`: The card *is* moved to `box i-1` (if `i > 1`). `previousCardId` is set. State is saved. `showNewRandomCard()` is called. The key change is how `showNewRandomCard` then behaves.
+    b. Task 15.2: (JS) Introduce a new global JavaScript variable: `let activeLearningBox = 1;` (or initialized dynamically).
+    c. Task 15.3: (JS) In `loadCardsForTopic`, after `currentTopicSRSData` is populated (from source or localStorage) and saved, iterate from box `b=1` to `5`. The first `b` for which `currentTopicSRSData.some(card => card.box === b)` is true becomes the new `activeLearningBox`. If no cards, set `activeLearningBox` to a state indicating no active box (e.g., 0 or null).
+    d. Task 15.4: (JS) Refactor `showNewRandomCard`:
+        i. Identify `cardsInActiveBox = currentTopicSRSData.filter(c => c.box === activeLearningBox)`.
+        ii. Filter `cardsInActiveBox` to exclude `previousCardId` IF `previousCardId`'s original card object (found by ID in `currentTopicSRSData`) was also in `activeLearningBox` AND if `cardsInActiveBox.length > 1`. Let this be `selectableFromActiveBox`.
+        iii. If `selectableFromActiveBox` is not empty, pick a random card from it, set `currentCardIndex`, call `displayCard()`, and return.
+        iv. Else (active box depleted or only had `previousCardId`), scan for a new `activeLearningBox`: Loop `b` from 1 to 5. Find first `b` where `currentTopicSRSData.some(c => c.box === b)` is true. 
+        v. If a new `activeLearningBox` `b` is found: set `activeLearningBox = b`, get all cards in this new box, pick one randomly (no need for `previousCardId` check here as we changed boxes), set `currentCardIndex`, call `displayCard()`, and return.
+        vi. Else (no cards in any box 1-5), set `currentCardIndex = -1`, call `displayCard()`, and return.
+    e. Task 15.2 from previous task list (Confirm topic re-entry correctly starts review from earliest box) is naturally handled by `loadCardsForTopic` re-calculating `activeLearningBox` and resetting `previousCardId`.
+16. Task 16: Relocate and Refine "Clear Progress" Button
+    a. Task 16.1: (HTML) Move the clear progress button from `topic-selection-view` to `flashcard-view` (e.g., below SRS boxes).
+    b. Task 16.2: (HTML) Rename button text to "Reset Topic Progress".
+    c. Task 16.3: (JS) Rename `handleClearAllSRSData` to `handleClearCurrentTopicSRSData`.
+    d. Task 16.4: (JS) Modify the renamed function to remove only `localStorage` for the `currentTopic`.
+    e. Task 16.5: (JS) After clearing, the function should reload the current topic by calling `loadCardsForTopic()` (it implicitly uses `currentTopic`).
+    f. Task 16.6: (JS) Update `updateButtonStates` to manage enable/disable state of this button (enabled in flashcard view).
+17. Task 17: Refine "Reset Topic Progress" Button to Icon in Header
+    a. Task 17.1: (HTML) Remove existing "Reset Topic Progress" button and its container.
+    b. Task 17.2: (HTML) Add a new icon button (e.g., using ↻ symbol) with ID `clear-srs-storage-btn` inside `.flashcard-header` next to the topic name.
+    c. Task 17.3: (CSS) Style the new icon button for subtle appearance and correct alignment in the header.
+    d. Task 17.4: (JS) Ensure existing JS for this button ID works as intended with the new element.
+18. Task 18: Refine Flashcard Header Layout
+    a. Task 18.1: (HTML) Group topic name and refresh icon in a new container div within `.flashcard-header`.
+    b. Task 18.2: (CSS) Style the new container to center its content (topic name + icon) and use `flex-grow` to occupy middle space.
+    c. Task 18.3: (CSS) Adjust styles for topic name and refresh icon for better alignment and spacing within their new container.
+19. Task 19: Advanced Header Centering with Absolute Positioning
+    a. Task 19.1: (CSS) Modify `.flashcard-header` to be `position: relative`.
+    b. Task 19.2: (CSS) Absolutely position `#back-to-topics-btn` to the left and `#side-selector-switch` to the right, vertically centered.
+    c. Task 19.3: (CSS) Ensure `.topic-title-wrapper` (containing topic name and refresh icon) correctly centers its content across the full header width, accounting for the absolutely positioned elements.
+20. Task 20: Adjust Flashcard Header Spacing
+    a. Task 20.1: (CSS) Set `margin-bottom: 0;` for `.flashcard-header`.
+    b. Task 20.2: (CSS) Remove `padding-bottom: 10px;` from `.flashcard-header`.
+21. Task 21: Improve Styles and Responsiveness
+    a. Task 21.1: (CSS) Apply a more modern font stack and base line-height.
+    b. Task 21.2: (CSS) Add `box-sizing: border-box;` globally.
+    c. Task 21.3: (CSS) Add media queries to adjust layout and font sizes for smaller screens (e.g., topic cards, SRS boxes, header elements, card text).
+    d. Task 21.4: (CSS) Refine button styles (padding, hover/active states) for consistency and usability.
+    e. Task 21.5: (CSS) General review of spacing and visual hierarchy.
+22. Task 22: Relocate SRS Box Display to Bottom
+    a. Task 22.1: (HTML) Move the `#srs-boxes-container` div to below the `.navigation-buttons` div.
+    b. Task 22.2: (CSS) Adjust margins and borders for `#srs-boxes-container` for its new position at the bottom.
+23. Task 23: UI and Styling Refinements
+    a. Task 23.1: (CSS) Remove `padding-bottom` from `.flashcard-header`.
+    b. Task 23.2: (HTML & JS) Display the current `activeLearningBox` number in the UI.
+    c. Task 23.3: (CSS) Differentiate card front/back with background colors.
+    d. Task 23.4: (CSS) Make the Left/Right switch options use these same background colors when active.
+24. Task 24: Change Active Learning Box Indication to Box Highlighting
+    a. Task 24.1: (HTML) Remove the `<p id="current-learning-box-display" class="learning-box-info"></p>` element.
+    b. Task 24.2: (CSS) Remove styles for `.learning-box-info`. Add styles for an `.active-srs-box` class.
+    c. Task 24.3: (CSS) Adjust `.topic-title-wrapper` if its `flex-direction` was only for the removed text.
+    d. Task 24.4: (JS) Remove JS related to `currentLearningBoxDisplay` text element.
+    e. Task 24.5: (JS) Modify `updateBoxDisplay()` to add/remove `.active-srs-box` class from the correct SRS box div based on `activeLearningBox`.
+25. Task 25: Fix Side Switch Display & Remove Flip Card Button
+    a. Task 25.1: (CSS) Correct CSS for `.side-selector-switch` to ensure visibility and right-alignment in the header.
+    b. Task 25.2: (HTML) Remove the "Flip Card" button.
+    c. Task 25.3: (JS) Remove `flipCardBtn` constant, its event listener, and its state management in `updateButtonStates`. (Keep `flipCard()` if card click still flips).
+26. Task 26: Adjust SRS Button Layout (Forgot/Know) - Persistent Side-by-Side Full Width
+    a. Task 26.1: (CSS) Configure `.navigation-buttons` for flex layout to support two full-width-sharing child buttons.
+    b. Task 26.2: (CSS) Apply `flex-grow: 1` and `flex-basis: 0` to `#forgot-btn` and `#know-it-btn` to make them share the full width.
+    c. Task 26.3: (CSS) Ensure these styles override any media query stacking for these specific buttons, so they remain side-by-side on all screen sizes.
+27. Task 27: Display SRS Box Distribution on Topic Cards
+    a. Task 27.1: (HTML) Add a container within each topic card for the SRS progress display.
+    b. Task 27.2: (CSS) Style the progress container and individual box indicators (small font, compact). Define distinct visual representation for each box (e.g. color-coded dots/segments).
+    c. Task 27.3: (JS) Modify `populateTopicRectangles` to:
+        i. Load SRS data for each topic from localStorage.
+        ii. Count cards in each of the 5 boxes for that topic.
+        iii. Dynamically generate and append the mini-display (dots/segments) to the topic card.
+28. Task 28: Uniform Size for Topic Cards
+    a. Task 28.1: (CSS) Set fixed `width` and `height` for `.topic-card`.
+    b. Task 28.2: (CSS) Ensure content (title and SRS progress) fits or is handled gracefully (e.g., text overflow) within the fixed dimensions.
+29. Task 29: Refine Topic Card Layout (2-per-row Desktop, 1-per-row Mobile, Centered Progress)
+    a. Task 29.1: (CSS) Adjust `.topic-card` width to achieve a 2-column layout on larger screens.
+    b. Task 29.2: (CSS) Ensure `.topic-card` is `width: 100%;` in mobile view (media query).
+    c. Task 29.3: (CSS) Center the `.topic-srs-progress` bar within the topic card.
+30. Task 30: Reduce Topic Card Height on Desktop View
+    a. Task 30.1: (CSS) In the base rule for `.topic-card`, change `height: 110px;` to `height: 100px;` (or another preferred shorter value).
+    b. Task 30.2: (CSS) In the base rule for `.topic-card-title`, adjust `max-height` from `3.6em` to `2.4em` (to allow for roughly 2 lines of title text within the shorter card). The `font-size` and `line-height` for the title should also be reviewed to ensure they complement this.
+31. Task 31: Refresh Topic Progress on Back & Revert Title Font Size
+    a. Task 31.1: (JS) Call `populateTopicRectangles()` from `showTopicSelectionView()` to refresh progress.
+    b. Task 31.2: (CSS) Revert/adjust `.topic-card-title` font size and potentially `max-height`.
+
+## All relevant files
+
+Task 29.1 - 29.3:
++/- index.html to update (CSS for topic card layout refinements)
+
+Task 30.1 - 30.2:
++/- index.html to update (CSS for desktop topic card height reduction)
+
+Task 31.1 - 31.2:
++/- index.html to update (JS for progress refresh, CSS for font size revert)
