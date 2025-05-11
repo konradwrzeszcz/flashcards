@@ -140,6 +140,10 @@ A simple web application to display flashcards. Users can select a topic, view a
   - [ done ] Task 25.1: (CSS) Correct CSS for `.side-selector-switch` to ensure visibility and right-alignment in the header.
   - [ done ] Task 25.2: (HTML) Remove the "Flip Card" button.
   - [ done ] Task 25.3: (JS) Remove `flipCardBtn` constant, its event listener, and its state management in `updateButtonStates`. (Keep `flipCard()` if card click still flips).
+- [ done ] Task 26: Adjust SRS Button Layout (Forgot/Know) - Persistent Side-by-Side Full Width
+  - [ done ] Task 26.1: (CSS) Configure `.navigation-buttons` for flex layout to support two full-width-sharing child buttons.
+  - [ done ] Task 26.2: (CSS) Apply `flex-grow: 1` and `flex-basis: 0` to `#forgot-btn` and `#know-it-btn` to make them share the full width.
+  - [ done ] Task 26.3: (CSS) Ensure these styles override any media query stacking for these specific buttons, so they remain side-by-side on all screen sizes.
 
 ## Implementation plan
 
@@ -215,74 +219,4 @@ List of tasks in implementation order and detailed description.
     k. Task 13.11: Adjust `updateButtonStates()`: "Know it" and "Forgot" buttons are enabled if a card is displayed. "Flip" button also depends on card display.
     l. Task 13.12: (JS) Remove all references to `nextRandomCardBtn` from JS, including its `getElementById` and event listener (if any was re-added).
 14. Task 14: Persist SRS Box Data in localStorage
-    a. Task 14.1: (JS) `saveSRStoLocalStorage(topicName, srsCardStates)`: Takes the `currentTopicSRSData` (which contains full card objects). It should map this to an array of simpler objects `[{id, box}]` to store. It will then `JSON.stringify` this array and save it to `localStorage` under the key `srsData_${topicName}`.
-    b. Task 14.2: (JS) `loadSRSfromLocalStorage(topicName)`: Retrieves the item for `srsData_${topicName}`. If found, `JSON.parse` it and return the array of `[{id, box}]`. If not found or error, return `null`.
-    c. Task 14.3: (JS) In `loadCardsForTopic`: 
-        i. Call `loadSRSfromLocalStorage(currentTopic)`.
-        ii. Iterate through the original `flashcardData[currentTopic]`. For each card, create the base object (`{id, question, answer, box: 1}`).
-        iii. If loaded SRS data exists, find the corresponding card by `id` in the loaded data. If found, update the `box` number for the card being added to `currentTopicSRSData`.
-        iv. After `currentTopicSRSData` is fully populated (either with loaded states or defaults), call `saveSRStoLocalStorage(currentTopic, currentTopicSRSData)` to ensure any new cards (not in localStorage yet) get saved with Box 1, or to save the initial state if nothing was loaded.
-    d. Task 14.4: (JS) In `handleKnowIt()` and `handleForgot()`, after the card's `box` is updated, call `saveSRStoLocalStorage(currentTopic, currentTopicSRSData)`.
-    e. Task 14.5: (HTML) In `topic-selection-view` HTML, add `<button id="clear-srs-storage-btn">Clear All Progress</button>` perhaps below the `topic-cards-container`.
-    f. Task 14.6: (CSS) Add basic styling for `#clear-srs-storage-btn` (e.g., making it distinct, perhaps a warning color).
-    g. Task 14.7: (JS) `handleClearAllSRSData()`: Loop `i` from `0` to `localStorage.length - 1`. Get `localStorage.key(i)`. If the key `startsWith('srsData_')`, call `localStorage.removeItem(key)`. After loop, alert user. Then call `populateTopicRectangles()` and `showTopicSelectionView()` (which implicitly clears `currentTopicSRSData` for any active view).
-    h. Task 14.8: (JS) Add `getElementById` for `clear-srs-storage-btn` and attach `handleClearAllSRSData` to its click event.
-15. Task 15: Refine SRS Logic for "I forgot" and Box Prioritization
-    a. Task 15.1: (JS) Modify `handleForgot()`: The card *is* moved to `box i-1` (if `i > 1`). `previousCardId` is set. State is saved. `showNewRandomCard()` is called. The key change is how `showNewRandomCard` then behaves.
-    b. Task 15.2: (JS) Introduce a new global JavaScript variable: `let activeLearningBox = 1;` (or initialized dynamically).
-    c. Task 15.3: (JS) In `loadCardsForTopic`, after `currentTopicSRSData` is populated (from source or localStorage) and saved, iterate from box `b=1` to `5`. The first `b` for which `currentTopicSRSData.some(card => card.box === b)` is true becomes the new `activeLearningBox`. If no cards, set `activeLearningBox` to a state indicating no active box (e.g., 0 or null).
-    d. Task 15.4: (JS) Refactor `showNewRandomCard`:
-        i. Identify `cardsInActiveBox = currentTopicSRSData.filter(c => c.box === activeLearningBox)`.
-        ii. Filter `cardsInActiveBox` to exclude `previousCardId` IF `previousCardId`'s original card object (found by ID in `currentTopicSRSData`) was also in `activeLearningBox` AND if `cardsInActiveBox.length > 1`. Let this be `selectableFromActiveBox`.
-        iii. If `selectableFromActiveBox` is not empty, pick a random card from it, set `currentCardIndex`, call `displayCard()`, and return.
-        iv. Else (active box depleted or only had `previousCardId`), scan for a new `activeLearningBox`: Loop `b` from 1 to 5. Find first `b` where `currentTopicSRSData.some(c => c.box === b)` is true. 
-        v. If a new `activeLearningBox` `b` is found: set `activeLearningBox = b`, get all cards in this new box, pick one randomly (no need for `previousCardId` check here as we changed boxes), set `currentCardIndex`, call `displayCard()`, and return.
-        vi. Else (no cards in any box 1-5), set `currentCardIndex = -1`, call `displayCard()`, and return.
-    e. Task 15.2 from previous task list (Confirm topic re-entry correctly starts review from earliest box) is naturally handled by `loadCardsForTopic` re-calculating `activeLearningBox` and resetting `previousCardId`.
-16. Task 16: Relocate and Refine "Clear Progress" Button
-    a. Task 16.1: (HTML) Move the clear progress button from `topic-selection-view` to `flashcard-view` (e.g., below SRS boxes).
-    b. Task 16.2: (HTML) Rename button text to "Reset Topic Progress".
-    c. Task 16.3: (JS) Rename `handleClearAllSRSData` to `handleClearCurrentTopicSRSData`.
-    d. Task 16.4: (JS) Modify the renamed function to remove only `localStorage` for the `currentTopic`.
-    e. Task 16.5: (JS) After clearing, the function should reload the current topic by calling `loadCardsForTopic()` (it implicitly uses `currentTopic`).
-    f. Task 16.6: (JS) Update `updateButtonStates` to manage enable/disable state of this button (enabled in flashcard view).
-17. Task 17: Refine "Reset Topic Progress" Button to Icon in Header
-    a. Task 17.1: (HTML) Remove existing "Reset Topic Progress" button and its container.
-    b. Task 17.2: (HTML) Add a new icon button (e.g., using ↻ symbol) with ID `clear-srs-storage-btn` inside `.flashcard-header` next to the topic name.
-    c. Task 17.3: (CSS) Style the new icon button for subtle appearance and correct alignment in the header.
-    d. Task 17.4: (JS) Ensure existing JS for this button ID works as intended with the new element.
-18. Task 18: Refine Flashcard Header Layout
-    a. Task 18.1: (HTML) Group topic name and refresh icon in a new container div within `.flashcard-header`
-    b. Task 18.2: (CSS) Style the new container to center its content (topic name + icon) and use `flex-grow` to occupy middle space
-    c. Task 18.3: (CSS) Adjust styles for topic name and refresh icon for better alignment and spacing within their new container
-19. Task 19: Advanced Header Centering with Absolute Positioning
-    a. Task 19.1: (CSS) Modify `.flashcard-header` to be `position: relative`.
-    b. Task 19.2: (CSS) Absolutely position `#back-to-topics-btn` to the left and `#side-selector-switch` to the right, vertically centered.
-    c. Task 19.3: (CSS) Ensure `.topic-title-wrapper` (containing topic name and refresh icon) correctly centers its content across the full header width, accounting for the absolutely positioned elements.
-20. Task 20: Adjust Flashcard Header Spacing
-    a. Task 20.1: (CSS) Set `margin-bottom: 0;` for `.flashcard-header`
-    b. Task 20.2: (CSS) Remove `padding-bottom: 10px;` from `.flashcard-header`
-21. Task 21: Improve Styles and Responsiveness
-    a. Task 21.1: (CSS) Apply a more modern font stack and base line-height.
-    b. Task 21.2: (CSS) Add `box-sizing: border-box;` globally.
-    c. Task 21.3: (CSS) Add media queries to adjust layout and font sizes for smaller screens (e.g., topic cards, SRS boxes, header elements, card text).
-    d. Task 21.4: (CSS) Refine button styles (padding, hover/active states) for consistency and usability.
-    e. Task 21.5: (CSS) General review of spacing and visual hierarchy.
-22. Task 22: Relocate SRS Box Display to Bottom
-    a. Task 22.1: (HTML) Move the `#srs-boxes-container` div to below the `.navigation-buttons` div.
-    b. Task 22.2: (CSS) Adjust margins and borders for `#srs-boxes-container` for its new position at the bottom.
-23. Task 23: UI and Styling Refinements
-    a. Task 23.1: (CSS) Remove `padding-bottom` from `.flashcard-header`.
-    b. Task 23.2: (HTML & JS) Display the current `activeLearningBox` number in the UI.
-    c. Task 23.3: (CSS) Differentiate card front/back with background colors.
-    d. Task 23.4: (CSS) Make the Left/Right switch options use these same background colors when active.
-24. Task 24: Change Active Learning Box Indication to Box Highlighting
-    a. Task 24.1: (HTML) Remove the `<p id=\"current-learning-box-display\" class=\"learning-box-info\"></p>` element.
-    b. Task 24.2: (CSS) Remove the `.learning-box-info` CSS rule. Create a new rule for `.srs-box.active-srs-box` (e.g., `background-color: #cce5ff; color: #004085; border-color: #b8daff; font-weight: bold;`).
-    c. Task 24.3: (CSS) Adjust `.topic-title-wrapper` if its `flex-direction` was only for the removed text.
-    d. Task 24.4: (JS) Remove JS related to `currentLearningBoxDisplay` text element.
-    e. Task 24.5: (JS) Modify `updateBoxDisplay()` to add/remove `.active-srs-box` class from the correct SRS box div based on `activeLearningBox`.
-25. Task 25: Fix Side Switch Display & Remove Flip Card Button
-    a. Task 25.1: (CSS) Review `.flashcard-header`, `.topic-title-wrapper`, and `.side-selector-switch` styles. The `.side-selector-switch` is absolutely positioned. Ensure its `right` and `top`/`transform` properties are correct and that it's not being obscured (e.g., by a `z-index` issue or if `.topic-title-wrapper` is unintentionally overlapping it due to width calculations). Add `z-index: 1;` to `#side-selector-switch` and `#back-to-topics-btn` if needed to ensure they are above the title wrapper if it spans full width.
-    b. Task 25.2: (HTML) In `index.html`, remove `<button id=\"flip-card-btn\" disabled>Flip Card</button>` from the `.navigation-buttons` div.
-    c. Task 25.3: (JS) Remove the `const flipCardBtn = document.getElementById('flip-card-btn');` line. Remove the event listener `if (flipCardBtn) flipCardBtn.addEventListener('click', ...);`. Remove the line `if (flipCardBtn) flipCardBtn.disabled = !isCardCurrentlyDisplayed;` from `updateButtonStates()`. The `flipCard()` function itself will be kept as `cardElement.addEventListener('click', flipCard)` is still present. 
+    a. Task 14.1: (JS) `saveSRStoLocalStorage(topicName, srsCardStates)`: Takes the `currentTopicSRSData` (which contains full card objects). It should map this to an array of simpler objects `[{id, box}]` to store. It will then `JSON.stringify` this array and save it to `localStorage` under the key `
