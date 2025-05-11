@@ -180,6 +180,8 @@ A simple web application to display flashcards. Users can select a topic, view a
   - [ to do ] Task 31.2: (CSS) Add `text-align: center;` and `vertical-align: middle;` to `.flashcard-table th, .flashcard-table td`.
 - [ to do ] Task 32: Set Table Font Size to 95% of Parent Card Text
   - [ to do ] Task 32.1: (CSS) Set `font-size: 0.95em;` for `.flashcard-table` for relative sizing.
+- [ done ] Task 32: Ensure Topic Section Headers Span Full Width
+  - [ done ] Task 32.1: (CSS) Adjust .topic-section-header styling to ensure it takes the full width of the #topic-cards-container, forcing topic cards below it.
 
 ## Implementation plan
 
@@ -371,3 +373,6 @@ Task 33.1 - 33.4:
 
 Task 34.1:
 +/- index.html to update (CSS to equalize table font size with card content)
+
+Task 32.1:
++/- index.html to update (CSS for topic section header layout)

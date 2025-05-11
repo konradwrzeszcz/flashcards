@@ -71,6 +71,18 @@
             margin-top: 10px; /* Reduced from 20px as section header has margin */
             margin-bottom: 20px;
         }
+        .topic-section-header {
+            width: 100%; /* Make header take full width */
+            margin-bottom: 10px; /* Add space below the header */
+            font-size: 1.2em; 
+            font-weight: bold;
+            margin-top: 20px; /* Add some space above, especially for subsequent sections */
+            color: #444; /* Darker color for better contrast if needed */
+        }
+        /* Remove top margin for the first section header if it's directly under main title */
+        #topic-cards-container > .topic-section-header:first-child {
+            margin-top: 0;
+        }
         .topic-card {
             background-color: #007bff;
             color: white;
@@ -366,7 +378,11 @@
             .app-container { width: 95%; padding: 15px; }
             h1 { font-size: 1.6em; }
             h2 { font-size: 1.2em; }
-            .topic-section-header { font-size: 1.1em; margin-top: 20px; }
+            .topic-section-header { 
+                font-size: 1.1em; 
+                margin-top: 15px; /* Adjusted for mobile */
+                /* width: 100% is inherited */
+            }
             .topic-card { 
                 width: 100%; 
                 height: auto; 
