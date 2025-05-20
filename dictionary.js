@@ -257,6 +257,36 @@ const flashcardData = {
             "What time does it end?": "Τι ώρα τελειώνει;",
             "How long does it take?": "Πόσο διαρκεί;"
         },
+        "Adverbs of Frequency": {
+            "always": "πάντα",
+            "almost always": "σχεδόν πάντα",
+            "usually": "συνήθως",
+            "often": "συχνά",
+            "many times": "πολλές φορές",
+            "sometimes": "μερικές φορές",
+            "occasionally": "καμιά φορά",
+            "rarely": "σπάνια",
+            "seldom": "σπανίως",
+            "never": "ποτέ"
+        },
+        "Prepositions of Location": {
+            "on / onto": "πάνω σε",
+            "under / below": "κάτω από",
+            "behind": "πίσω από",
+            "in front of": "μπροστά από",
+            "next to / beside": "δίπλα σε",
+            "above / over": "πάνω από",
+            "between": "ανάμεσα σε",
+            "near (to)": "κοντά σε",
+            "far from": "μακριά από",
+            "in / into / at": "σε",
+            "inside": "μέσα σε",
+            "outside": "έξω από",
+            "around": "γύρω από",
+            "through": "μέσα από",
+            "from": "από",
+            "to / towards": "προς / σε"
+        },
         "Chitchat": {
             "Friend": "ο φίλος",
             "Family": "η οικογένεια",
